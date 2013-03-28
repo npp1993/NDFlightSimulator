@@ -9,7 +9,6 @@
 float angle=0.0,deltaAngle = 0.0,ratio,rotationAngleDelta = 0,rotationAngle = 0;
 float x=0.0f,y=21.75f,z=5.0f;
 float lx=0.0f,ly=0.0f,lz=-1.0f;
-GLint snowman_display_list;
 int deltaMove = 0;
 int indexer = 0;
 
@@ -167,7 +166,6 @@ void buildTerrain(){
 }
 void initScene() {
 	glEnable(GL_DEPTH_TEST);
-	snowman_display_list = createDL();
 }
 
 
