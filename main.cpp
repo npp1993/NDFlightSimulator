@@ -1,18 +1,54 @@
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#include <GLUT/glut.h>
+#include "GraphicsHeader.h"
 #include <math.h>
-#include <random> 
+#include <random>
 #include <iostream>
 #include <vector>
-#include "TerrainTile.h" 
+#include "TerrainTile.h"
+#include "Tree.h"
 float angle=0.0,deltaAngle = 0.0,ratio,rotationAngleDelta = 0,rotationAngle = 0;
-float x=0.0f,y=21.75f,z=5.0f;
+float x=-10.0f,y=21.75f,z=5.0f;
 float lx=0.0f,ly=0.0f,lz=-1.0f;
 int deltaMove = 0;
 int indexer = 0;
+int shipRotationAngle = 0;
 
- std::vector <std::vector <TerrainTile> >  tiles;
+std::vector <std::vector <TerrainTile> >  tiles;
+double frameCount,currentTime,fps,previousTime,totalFPS=0, iterations=0;
+
+void calculateFPS()
+{
+    //  Increase frame count
+    frameCount++;
+    
+    //  Get the number of milliseconds since glutInit called
+    //  (or first call to glutGet(GLUT ELAPSED TIME)).
+    currentTime = glutGet(GLUT_ELAPSED_TIME);
+    
+    //  Calculate time passed
+    int timeInterval = currentTime - previousTime;
+    
+    if(timeInterval > 1000)
+    {
+        //  calculate the number of frames per second
+        fps = frameCount / (timeInterval / 1000.0f);
+        
+        //  Set time
+        previousTime = currentTime;
+        
+        //  Reset frame count
+        frameCount = 0;
+        totalFPS+=fps;
+        iterations++;
+        std::cout<<"FPS: "<<fps<<"\n";
+        std::cout<<"Average FPS: "<<totalFPS/iterations<<"\n";
+    }
+    
+}
+
+
+
+
+
 
 void orientMe(float ang) {
     
@@ -33,14 +69,33 @@ void moveMeFlat(int direction) {
 			  0.0f,1.0f,0.0f);
 }
 void rotateMe(float ang) {
-	ly = sin(ang);
-	lx = cos(ang);
-    lz=0;
+    orientMe(ang);
+	ly = -sin(ang);
+	lx = -cos(ang);
+    lz = 1;
 	glLoadIdentity();
 	gluLookAt(x, y, z,
 		      x + lx,y + ly,z + lz,
 			  0.0f,1.0f,0.0f);
     
+}
+
+void drawTrees(){
+    for (int i = 20; i <tiles.size()-20; i++) {
+        for (int j = 20; j <tiles.size()-20; j++) {
+            if (tiles[i][j].hasTree&&tiles[i][j].z>2) {
+                Tree t;
+                t.x = tiles[i][j].x;
+                t.y = tiles[i][j].y;
+                t.z = tiles[i][j].z1;
+                t.height = .5;
+                t.baseWidth =.4;
+                t.leavesWidth = .55;
+                t.drawTree();
+            }
+            
+        }
+    }
 }
 void changeSize(int w, int h)
 {
@@ -96,12 +151,15 @@ void buildTerrain(){
             newTile.y = i;
             newTile.xMax = j+tileSize;
             newTile.yMax = i+tileSize;
-            newTile.z = 1*(rand()%600-300);
+            newTile.z = 1*(rand()%600-300)+2;
             newTile.z1=newTile.z;
             newTile.z2=newTile.z;
             newTile.z3=newTile.z;
             newTile.z4=newTile.z;
             newTile.zMax = newTile.z;
+            if ((rand()%1000)>992) {
+                newTile.hasTree = 1;
+            }
             tiledRow.push_back(newTile);
         }
         tiles.push_back(tiledRow);
@@ -128,7 +186,7 @@ void buildTerrain(){
                 if (newGreen>.3) newGreen = .3;
                 if (newGreen<0) newGreen = 0;
                 tiles[i][j].green = newGreen;
-              
+                
                 
                 float totalBlue = 0;
                 totalBlue += tiles[i][j-1].blue;
@@ -146,7 +204,7 @@ void buildTerrain(){
                 zTotal  += tiles[i+1][j].z;
                 zTotal  += tiles[i][j+1].z;
                 zTotal  += tiles[i-1][j].z;
-                tiles[i][j].z = zTotal/4 +(.0003*(rand()%1000-500));
+                tiles[i][j].z = zTotal/4 +(.00016*(rand()%1000-500));
                 tiles[i][j].z1 = tiles[i][j].z;
                 tiles[i-1][j].z4 = tiles[i][j].z;
                 tiles[i-1][j-1].z3 = tiles[i][j].z;
@@ -159,9 +217,9 @@ void buildTerrain(){
                 
             }
         }
-
+        
     }
-        std::cout<<tiles.size();
+    std::cout<<tiles.size();
     std::cout<<tiles[0].size();
 }
 void initScene() {
@@ -169,6 +227,40 @@ void initScene() {
 }
 
 
+void drawPlane(){
+    
+    //glRotatef(angle, 0, 1, 0);
+    glTranslatef(x, y+1, z);
+    glPushMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glRotatef(shipRotationAngle, 1, 0, 0);
+    
+    glRotatef(angle, 0, 1, 0);
+    shipRotationAngle+=1;
+    if (shipRotationAngle>360) {
+        shipRotationAngle = 1;
+    }
+    glutWireCone(1, 2, 20, 20);
+    
+    glPopMatrix();
+    glTranslatef(-x, -y-1, -z);
+    //glRotatef(-angle, 0, 1, 0);
+}
+
+void drawWater(float maxX,float maxY,float minX,float minY){
+    TerrainTile water;
+    water.red = 0;
+    water.green = 0;
+    water.blue = .1;
+    water.alpha = .4;
+    water.z1 = 0; water.z2 = 0; water.z3 = 0; water.z4 = 0;
+    water.x=minX;
+    water.y=minY;
+    water.xMax =maxX;
+    water.yMax =maxY;
+    water.drawTile();
+    
+}
 
 
 void renderScene(void) {
@@ -188,28 +280,36 @@ void renderScene(void) {
     }
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // Draw ground
-    //drawTerrain();
-	glColor3f(0.9f, 0.9f, 0.9f);
-	glBegin(GL_QUADS);
+	
+    float minX=200000,maxX=0,minY=20000,maxY=0;
+    glBegin(GL_QUADS);
     for (int i = 20; i <tiles.size()-20; i++) {
         for (int j = 20; j <tiles.size()-20; j++) {
-            tiles[i][j].drawTile();
+            if(tiles[i][j].xMax>maxX) maxX = tiles[i][j].xMax;
+            if(tiles[i][j].yMax>maxY) maxY = tiles[i][j].yMax;
+            if(tiles[i][j].x<minX) minX = tiles[i][j].x;
+            if(tiles[i][j].y<minY) minY = tiles[i][j].y;
+            if (tiles[i][j].z>-.7) {
+                tiles[i][j].drawTile();
+            }
+            
+            
         }
     }
+    drawWater(maxX,maxY,minX,minY);
 	glEnd();
     
-    glBegin(GL_TRIANGLES);
-    glColor3f(.5,.5,.5);
-    glVertex3f(x, y-2, z-5);
-    glVertex3f(x+.5, y-2, z-5);
-    glVertex3f(x, y-2, z-5.5);
-    glRotatef(angle, x+2, y, z);
-    glEnd();
-    std::cout<<" ";
+    drawTrees();
+    
+    drawPlane();
+    
+    calculateFPS();
 	glutSwapBuffers();
+    //std::cout<<"hello";
     indexer++;
-
+    
 }
+
 
 
 void pressKey(int key, int x, int y) {
@@ -223,9 +323,9 @@ void pressKey(int key, int x, int y) {
 		case GLUT_KEY_DOWN :
 			deltaMove = -1;break;
         case 'm':
-            rotationAngleDelta = -.004;break;
+            rotationAngleDelta = -.008;break;
         case 'k':
-            rotationAngleDelta = .004;break;
+            rotationAngleDelta = .008;break;
 	}
 }
 
@@ -242,7 +342,7 @@ void releaseKey(int key, int x, int y) {
             rotationAngleDelta  = 0;break;
         case 'K':
             rotationAngleDelta = 0;break;
-        
+            
 	}
 }
 
@@ -259,15 +359,17 @@ int main(int argc, char **argv) {
 	initScene();
     
     // Enable lighting
-    //glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
+    GLfloat light_ambient[] = { 1.0, 1.0, 1.0, 1.0 };
     GLfloat mat_specular[] = {0.3, 0.3, 0.3, 1.0};
     GLfloat mat_shininess[] = { 10.0 };
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
     glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
     glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
-    
+    glClearColor(0.0f, 0.0f, .3f, .5f);
     
 	glutIgnoreKeyRepeat(1);
 	glutSpecialFunc(pressKey);

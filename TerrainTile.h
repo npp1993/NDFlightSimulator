@@ -6,8 +6,8 @@
 //  Copyright (c) 2013 Matt McGlynn. All rights reserved.
 //
 
-#ifndef __GraphicsExample__TerrainTile__
-#define __GraphicsExample__TerrainTile__
+#ifndef TerrainTile_H
+#define TerrainTile_H
 
 #include <iostream>
 #include <OpenGL/gl.h>
@@ -21,7 +21,7 @@
 
 
 class TerrainTile {
-
+    
 public:
     float x;
     float xMax;
@@ -36,7 +36,10 @@ public:
     float z2;
     float z3;
     float z4;
+    float alpha;
+    bool hasTree = 0;
     TerrainTile(){
+        alpha = 1;
         x = 0;
         xMax = 0;
         y = 0;
@@ -49,43 +52,43 @@ public:
         z4 = 0;
     }
     void drawTile(){
-        glColor3f(red,green,blue);
+        glColor4f(red,green,blue,alpha);
         glVertex3f(x, z1, y);
         glVertex3f(x, z2, yMax);
         glVertex3f(xMax, z3, yMax);
         glVertex3f(xMax, z4, y);
         
         /*
-        double baseX = x;
-        double baseY = y;
-        glColor3f(1,1,1);
-        baseX = x;
-        baseY = y;
-        glVertex3f(baseX, 2, baseY);
-        glVertex3f(baseX, 2, baseY+2);
-        glVertex3f(baseX+2, 2, baseY+2);
-        glVertex3f(baseX+2, 2, baseY);
-        glColor3f(1,0,0);
-        baseX = x;
-        baseY = yMax;
-        glVertex3f(baseX, 1, baseY);
-        glVertex3f(baseX, 1, baseY+2);
-        glVertex3f(baseX+2, 1, baseY+2);
-        glVertex3f(baseX+2, 1, baseY);
-        glColor3f(0,1,0);
-        baseX = xMax;
-        baseY = yMax;
-        glVertex3f(baseX, 1.5, baseY);
-        glVertex3f(baseX, 1.5, baseY+2);
-        glVertex3f(baseX+2, 1.5, baseY+2);
-        glVertex3f(baseX+2, 1.5, baseY);
-        glColor3f(0,0,1);
-        baseX = xMax;
-        baseY = y;
-        glVertex3f(baseX, 1.7, baseY);
-        glVertex3f(baseX, 1.7, baseY+2);
-        glVertex3f(baseX+2, 1.7, baseY+2);
-        glVertex3f(baseX+2, 1.7, baseY);
+         double baseX = x;
+         double baseY = y;
+         glColor3f(1,1,1);
+         baseX = x;
+         baseY = y;
+         glVertex3f(baseX, 2, baseY);
+         glVertex3f(baseX, 2, baseY+2);
+         glVertex3f(baseX+2, 2, baseY+2);
+         glVertex3f(baseX+2, 2, baseY);
+         glColor3f(1,0,0);
+         baseX = x;
+         baseY = yMax;
+         glVertex3f(baseX, 1, baseY);
+         glVertex3f(baseX, 1, baseY+2);
+         glVertex3f(baseX+2, 1, baseY+2);
+         glVertex3f(baseX+2, 1, baseY);
+         glColor3f(0,1,0);
+         baseX = xMax;
+         baseY = yMax;
+         glVertex3f(baseX, 1.5, baseY);
+         glVertex3f(baseX, 1.5, baseY+2);
+         glVertex3f(baseX+2, 1.5, baseY+2);
+         glVertex3f(baseX+2, 1.5, baseY);
+         glColor3f(0,0,1);
+         baseX = xMax;
+         baseY = y;
+         glVertex3f(baseX, 1.7, baseY);
+         glVertex3f(baseX, 1.7, baseY+2);
+         glVertex3f(baseX+2, 1.7, baseY+2);
+         glVertex3f(baseX+2, 1.7, baseY);
          */
     }
     
