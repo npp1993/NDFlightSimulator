@@ -37,7 +37,8 @@ public:
     float z3;
     float z4;
     float alpha;
-    bool hasTree = 0;
+    double hasTree = 0;
+    double hasBuilding = 0;
     TerrainTile(){
         alpha = 1;
         x = 0;

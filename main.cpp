@@ -5,12 +5,15 @@
 #include <vector>
 #include "TerrainTile.h"
 #include "Tree.h"
+#include "Building.h"
+#include "Plane.h"
 float angle=0.0,deltaAngle = 0.0,ratio,rotationAngleDelta = 0,rotationAngle = 0;
 float x=-10.0f,y=21.75f,z=5.0f;
 float lx=0.0f,ly=0.0f,lz=-1.0f;
 int deltaMove = 0;
 int indexer = 0;
 int shipRotationAngle = 0;
+Plane mainPlane;
 
 std::vector <std::vector <TerrainTile> >  tiles;
 double frameCount,currentTime,fps,previousTime,totalFPS=0, iterations=0;
@@ -83,7 +86,9 @@ void rotateMe(float ang) {
 void drawTrees(){
     for (int i = 20; i <tiles.size()-20; i++) {
         for (int j = 20; j <tiles.size()-20; j++) {
-            if (tiles[i][j].hasTree&&tiles[i][j].z>2) {
+            //std::cout<<tiles[i][j].hasTree;
+            if (tiles[i][j].hasTree&&(tiles[i][j].z>2)) {//,78 for clumping
+                //std::cout<<tiles[i][j].hasTree;
                 Tree t;
                 t.x = tiles[i][j].x;
                 t.y = tiles[i][j].y;
@@ -94,6 +99,52 @@ void drawTrees(){
                 t.drawTree();
             }
             
+        }
+    }
+}
+
+void drawBuildings(){
+    for (int i = 20; i <tiles.size()-20; i++) {
+        for (int j = 20; j <tiles.size()-20; j++) {
+            if (tiles[i][j].hasBuilding>.7&&tiles[i][j].z>4) {
+                int step = 0;
+                for (int x=-3; x<8; x++) {
+                    for (int y=-3; y<8; y++) {
+                        if (x==0&&y==0) {
+                            continue;
+                        }
+                        
+                        tiles[i+x][j+y].hasBuilding = 0;
+                        tiles[i+x][j+y].hasTree = 0;
+                        if (indexer<2) {
+                            for (int z = 0; z<3; z++) {
+                                tiles[i+x][j+y].red = (.2+tiles[i+x][j+y].red)/2;
+                                tiles[i+x][j+y].green= (.2+tiles[i+x][j+y].green)/2;
+                                tiles[i+x][j+y].blue= (.2+tiles[i+x][j+y].blue)/2;
+                            }
+                        }
+                        step++;
+                        step=step%5;
+                        if (x<-1||y<-1||x>5||y>5) {
+                            tiles[i+x][j+y].red = (.1+tiles[i+x][j+y].red)/2;
+                            tiles[i+x][j+y].green= (.1+tiles[i+x][j+y].green)/2;
+                            tiles[i+x][j+y].blue= (.1+tiles[i+x][j+y].blue)/2;
+                        }
+                        if ((x==-3||y==-3)&&step==2) {
+                            tiles[i+x-1][j+y-1].hasTree=1;
+                        }
+                        if ((x==7||y==7)&&step==2) {
+                            tiles[i+x+1][j+y+1].hasTree=1;
+                        }
+                    }
+                }
+                Building t;
+                t.x = tiles[i][j].x;
+                t.y = tiles[i][j].y;
+                t.z = tiles[i][j].z-2;
+                t.height = 20;
+                t.drawBuilding();
+            }
         }
     }
 }
@@ -160,6 +211,9 @@ void buildTerrain(){
             if ((rand()%1000)>992) {
                 newTile.hasTree = 1;
             }
+            if ((rand()%10000)>5000) {
+                newTile.hasBuilding = 1;
+            }
             tiledRow.push_back(newTile);
         }
         tiles.push_back(tiledRow);
@@ -198,6 +252,27 @@ void buildTerrain(){
                 if (newBlue<0) newBlue = 0;
                 tiles[i][j].blue = newBlue;
                 
+                //Forest creation
+                float totalTree = 0;
+                totalTree += tiles[i][j-1].hasTree;
+                totalTree += tiles[i+1][j].hasTree;
+                totalTree += tiles[i][j+1].hasTree;
+                totalTree += tiles[i-1][j].hasTree;
+                float newTree = totalTree/4 +0.00045*((rand()%1000)-500);
+                if (newTree>.8) newTree = .8;
+                if (newTree<0) newTree = 0;
+                //tiles[i][j].hasTree = newTree;
+                
+                float totalBuilding = 0;
+                totalBuilding += tiles[i][j-1].hasBuilding;
+                totalBuilding += tiles[i+1][j].hasBuilding;
+                totalBuilding += tiles[i][j+1].hasBuilding;
+                totalBuilding += tiles[i-1][j].hasBuilding;
+                float newBuilding = totalBuilding/4 +0.00015*((rand()%1000)-500);
+                if (newBuilding>.8) newBuilding = .8;
+                if (newBuilding<0) newBuilding = 0;
+                tiles[i][j].hasBuilding = newBuilding;
+                
                 //Terrain Smoothing
                 float zTotal = 0;
                 zTotal += tiles[i][j-1].z;
@@ -215,6 +290,12 @@ void buildTerrain(){
                     tiles[i][j].z4 = z;
                 }
                 
+                
+                //if (tiles[i][j].z<.2) {
+                //    tiles[i][j].red = .9;
+                //    tiles[i][j].green = .7;
+                //    tiles[i][j].blue = .62;
+                //}
             }
         }
         
@@ -228,23 +309,19 @@ void initScene() {
 
 
 void drawPlane(){
+    //Chase View
     
-    //glRotatef(angle, 0, 1, 0);
-    glTranslatef(x, y+1, z);
-    glPushMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glRotatef(shipRotationAngle, 1, 0, 0);
+    y = mainPlane.y+2;
+    double planeYawRad = mainPlane.planeYaw*3.14159262/180;
+    z = mainPlane.z+30*sin(planeYawRad);
+    x = mainPlane.x-30*cos(planeYawRad);
+    orientMe(1.57-planeYawRad);
+    moveMeFlat(0);
     
-    glRotatef(angle, 0, 1, 0);
-    shipRotationAngle+=1;
-    if (shipRotationAngle>360) {
-        shipRotationAngle = 1;
-    }
-    glutWireCone(1, 2, 20, 20);
+    //Move and draw plane
+    mainPlane.movePlane();
+    mainPlane.drawPlane();
     
-    glPopMatrix();
-    glTranslatef(-x, -y-1, -z);
-    //glRotatef(-angle, 0, 1, 0);
 }
 
 void drawWater(float maxX,float maxY,float minX,float minY){
@@ -264,7 +341,11 @@ void drawWater(float maxX,float maxY,float minX,float minY){
 
 
 void renderScene(void) {
-    //GLfloat lightpos[] = {static_cast<GLfloat>(-x+100), static_cast<GLfloat>(-y+300), static_cast<GLfloat>(-z), 3.};
+    GLfloat lightpos[] = {-x,-z,-y};
+    glTranslatef(lightpos[0], lightpos[1], lightpos[2]);
+    glColor3f(1, 1, 1);
+    //glutSolidSphere(30, 20, 20);
+    glTranslatef(-lightpos[0], -lightpos[1], -lightpos[2]);
     //glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
 	if (deltaMove)
 		moveMeFlat(deltaMove);
@@ -300,7 +381,7 @@ void renderScene(void) {
 	glEnd();
     
     drawTrees();
-    
+    drawBuildings();
     drawPlane();
     
     calculateFPS();
@@ -315,17 +396,30 @@ void renderScene(void) {
 void pressKey(int key, int x, int y) {
 	switch (key) {
 		case GLUT_KEY_LEFT :
-			deltaAngle = -0.004f;break;
+			deltaAngle = -0.014f;break;
 		case GLUT_KEY_RIGHT :
-			deltaAngle = 0.004f;break;
+			deltaAngle = 0.014f;break;
 		case GLUT_KEY_UP :
-			deltaMove = 1;break;
+			deltaMove = 3;break;
 		case GLUT_KEY_DOWN :
-			deltaMove = -1;break;
-        case 'm':
+			deltaMove = -3;break;
+        case 'v':
             rotationAngleDelta = -.008;break;
-        case 'k':
+        case 'c':
             rotationAngleDelta = .008;break;
+        case 'i':
+            mainPlane.pitch-=6; break;
+        case 'k':
+            mainPlane.pitch+=6; break;
+        case 'j':
+            mainPlane.roll-=10;break;
+        case 'l':
+            mainPlane.roll+=10;break;
+        case 'p':
+            mainPlane.speed+=.01;break;
+        case 'o':
+            mainPlane.speed-=.01;break;
+        
 	}
 }
 
@@ -342,6 +436,7 @@ void releaseKey(int key, int x, int y) {
             rotationAngleDelta  = 0;break;
         case 'K':
             rotationAngleDelta = 0;break;
+        
             
 	}
 }
@@ -361,17 +456,26 @@ int main(int argc, char **argv) {
     // Enable lighting
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
-    GLfloat light_ambient[] = { 1.0, 1.0, 1.0, 1.0 };
+    //glEnable(GL_LIGHT1);
+    GLfloat light_ambient[] = { 1, 1, 1, 1 };
+    GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat light_pos[] = { 0.0, 30.0, 0.0, 1 };
+    GLfloat light_dir[] = { 0.0, -1.0, -1.0};
     GLfloat mat_specular[] = {0.3, 0.3, 0.3, 1.0};
     GLfloat mat_shininess[] = { 10.0 };
     glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+    glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, light_dir);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
     glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
     glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
     glClearColor(0.0f, 0.0f, .3f, .5f);
     
-	glutIgnoreKeyRepeat(1);
+	glutIgnoreKeyRepeat(.1);
 	glutSpecialFunc(pressKey);
 	glutSpecialUpFunc(releaseKey);
     

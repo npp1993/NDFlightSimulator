@@ -13,7 +13,7 @@
 #include "GraphicsHeader.h"
 class Tree {
     
-    
+  
 public:
     float height;
     float baseWidth;
@@ -44,7 +44,6 @@ public:
         glTranslatef(0, 0, -3*height/4);
         glPopMatrix();
         glTranslatef(-x, -z, -y);
-        
     }
 };
 
