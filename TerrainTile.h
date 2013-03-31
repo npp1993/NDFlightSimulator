@@ -10,9 +10,7 @@
 #define TerrainTile_H
 
 #include <iostream>
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#include <GLUT/glut.h>
+#include "GraphicsHeader.h"
 #include <math.h>
 #include <random>
 #include <iostream>
@@ -37,8 +35,9 @@ public:
     float z3;
     float z4;
     float alpha;
-    double hasTree = 0;
-    double hasBuilding = 0;
+    double hasTree;
+    double hasBuilding;
+
     TerrainTile(){
         alpha = 1;
         x = 0;
@@ -51,6 +50,8 @@ public:
         z2 = 0;
         z3 = 0;
         z4 = 0;
+		hasTree = 0;
+		hasBuilding = 0;
     }
     void drawTile(){
         glColor4f(red,green,blue,alpha);
