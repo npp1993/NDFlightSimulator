@@ -7,6 +7,7 @@
 #include "Tree.h"
 #include "Building.h"
 #include "Plane.h"
+#include "Bullet.h"
 float angle=0.0,deltaAngle = 0.0,ratio,rotationAngleDelta = 0,rotationAngle = 0;
 float x=-10.0f,y=21.75f,z=5.0f;
 float lx=0.0f,ly=0.0f,lz=-1.0f;
@@ -14,6 +15,8 @@ int deltaMove = 0;
 int indexer = 0;
 int shipRotationAngle = 0;
 Plane mainPlane;
+std::vector <Bullet> bulletsArray;
+
 
 std::vector <std::vector <TerrainTile> >  tiles;
 double frameCount,currentTime,fps,previousTime,totalFPS=0, iterations=0;
@@ -341,11 +344,12 @@ void drawWater(float maxX,float maxY,float minX,float minY){
 
 
 void renderScene(void) {
-    GLfloat lightpos[] = {-x,-z,-y};
-    glTranslatef(lightpos[0], lightpos[1], lightpos[2]);
+    
+    //GLfloat lightpos[] = {-x,-z,-y};
+    //glTranslatef(lightpos[0], lightpos[1], lightpos[2]);
     glColor3f(1, 1, 1);
     //glutSolidSphere(30, 20, 20);
-    glTranslatef(-lightpos[0], -lightpos[1], -lightpos[2]);
+    //glTranslatef(-lightpos[0], -lightpos[1], -lightpos[2]);
     //glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
 	if (deltaMove)
 		moveMeFlat(deltaMove);
@@ -361,6 +365,11 @@ void renderScene(void) {
     }
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // Draw ground
+    
+    for (int i = 0; i<bulletsArray.size(); i++) {
+        bulletsArray[i].moveBullet();
+        bulletsArray[i].drawBullet();
+    }
 	
     float minX=200000,maxX=0,minY=20000,maxY=0;
     glBegin(GL_QUADS);
@@ -383,6 +392,8 @@ void renderScene(void) {
     drawTrees();
     drawBuildings();
     drawPlane();
+    
+    
     
     calculateFPS();
 	glutSwapBuffers();
@@ -419,6 +430,10 @@ void pressKey(int key, int x, int y) {
             mainPlane.speed+=.01;break;
         case 'o':
             mainPlane.speed-=.01;break;
+        case 'u':
+            Bullet newBullet = mainPlane.fireBullet();
+            bulletsArray.push_back(newBullet);
+            break;
         
 	}
 }
@@ -456,19 +471,20 @@ int main(int argc, char **argv) {
     // Enable lighting
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
-    //glEnable(GL_LIGHT1);
+    glEnable(GL_LIGHT1);
     GLfloat light_ambient[] = { 1, 1, 1, 1 };
     GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
     GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
     GLfloat light_pos[] = { 0.0, 30.0, 0.0, 1 };
-    GLfloat light_dir[] = { 0.0, -1.0, -1.0};
+    GLfloat light_dir[] = { 0.0, 0, 0};
     GLfloat mat_specular[] = {0.3, 0.3, 0.3, 1.0};
     GLfloat mat_shininess[] = { 10.0 };
     glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
     glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
     glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, light_dir);
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
     glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
     glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
     glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);

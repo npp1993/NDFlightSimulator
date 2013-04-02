@@ -11,6 +11,7 @@
 
 #include <math.h>
 #include "GraphicsHeader.h"
+#include "Bullet.h"
 
 class Plane {
     
@@ -31,7 +32,7 @@ public:
         z = 0;
         roll = 0;
         pitch = 0;
-        wingspan = 10;
+        wingspan = 8;
         speed = .2;
         planeYaw = 0;
     }
@@ -40,14 +41,14 @@ public:
         if (pitch>60) {
             pitch=60;
         }
-        if (roll>90){
-            roll = 90;
+        if (roll>130){
+            roll = 130;
         }
         if (pitch<-60) {
             pitch= -60;
         }
-        if (roll<-90){
-            roll = -90;
+        if (roll<-130){
+            roll = -130;
         }
         if (abs(roll)<10){
             roll/=1.002;
@@ -58,11 +59,25 @@ public:
         double pi = 3.14159262;
         
         //yaw is the cross product of roll and pitch
-        
+        int neg =  -2*((roll>90) || (roll<-90))+1;
         double rollRad = (roll*pi)/180;
+        if (rollRad>pi/2) {
+            rollRad-=pi;
+        }
+        if (rollRad<-pi/2) {
+            rollRad-=pi;
+        }
+        
         double pitchRad = (pitch*pi)/180;
         //yaw += asin(sin(rollRad)*sin(pitchRad))*6;
-        planeYaw-=roll/30*pitch/30;
+        double planeYawDelta = (roll/30*pitch/30)/2;
+        if (planeYawDelta>2) {
+            planeYawDelta = 2;
+        }
+        if (planeYawDelta<-2) {
+            planeYawDelta = -2;
+        }
+        planeYaw-=planeYawDelta;
         double yawRad = (planeYaw*pi)/180;
         //yawRad = asin(sin(rollRad)*sin(pitchRad))*6;
         //Motion based on yaw
@@ -70,7 +85,7 @@ public:
         z = z - speed*sin(yawRad);
         //std::cout<<planeYaw<<"\n";
         //Motion based on pitch
-        y = y + speed*sin(pitchRad)-speed*abs(sin(rollRad));
+        y = y + neg*(speed*sin(pitchRad)-speed*abs(sin(rollRad)));
         
         
         //std::cout<<y;
@@ -86,6 +101,7 @@ public:
         glRotatef(roll, 1, 0, 0);
         glRotatef(pitch, 0, 0, 1);
         glBegin(GL_TRIANGLES);
+        
         //Draw main wing
         glVertex3f(-.5*wingspan, 0, -wingspan);
         glVertex3f(-.5*wingspan, 0, wingspan);
@@ -136,9 +152,20 @@ public:
         glRotatef(-90, 0, 1, 0);
         glTranslatef(.7*wingspan, 0, -wingspan/2);
         glPopMatrix();
-        //
         glTranslatef(-x, -y, -z);
 
+    }
+    
+    Bullet fireBullet(){
+        Bullet shot;
+        shot.x = x;
+        shot.y = y;
+        shot.z = z;
+        shot.pitch = pitch;
+        shot.yaw = planeYaw;
+        shot.speed = speed*5;
+        shot.moveBullet();
+        return shot;
     }
     
 };
