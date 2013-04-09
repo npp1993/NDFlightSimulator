@@ -26,6 +26,7 @@ public:
     double wingspan;
     double speed;
     double planeYaw;
+    bool planeRed = 0;
     Plane(){
         x = -100;
         y = 5;
@@ -35,6 +36,7 @@ public:
         wingspan = 8;
         speed = .2;
         planeYaw = 0;
+        planeRed = 0;
     }
     
     void movePlane(){
@@ -95,6 +97,9 @@ public:
     void drawPlane(){
         glTranslatef(x, y, z);
         glColor3f(.16, .16, .16);
+        if (planeRed) {
+            glColor3f(.3, .1, .1);
+        }
         
         glPushMatrix();
         glRotatef(planeYaw, 0, 1, 0);
@@ -108,6 +113,7 @@ public:
         glVertex3f(+.5*wingspan, 0, 0);
         
         //Draw fins
+        glColor3f(.07, .07, .07);
         glVertex3f(-.5*wingspan, 0, -wingspan/2);
         glVertex3f(.0*wingspan, 0, -wingspan/2);
         glVertex3f(-.5*wingspan, wingspan/3.5, -wingspan/2);

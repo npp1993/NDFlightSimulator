@@ -12,7 +12,7 @@
 #include <iostream>
 #include "GraphicsHeader.h"
 #include <math.h>
-#include <random>
+//#include <random>
 #include <iostream>
 #include <vector>
 
@@ -60,7 +60,7 @@ public:
         glVertex3f(xMax, z3, yMax);
         glVertex3f(xMax, z4, y);
         
-        /*
+        /*Useful for tile orientation testing
          double baseX = x;
          double baseY = y;
          glColor3f(1,1,1);

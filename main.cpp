@@ -1,13 +1,15 @@
 #include "GraphicsHeader.h"
 #include <math.h>
-#include <random>
+//#include <random>
 #include <iostream>
 #include <vector>
+#include <fstream>
 #include "TerrainTile.h"
 #include "Tree.h"
 #include "Building.h"
 #include "Plane.h"
 #include "Bullet.h"
+#include "EnemyPlane.h"
 float angle=0.0,deltaAngle = 0.0,ratio,rotationAngleDelta = 0,rotationAngle = 0;
 float x=-10.0f,y=21.75f,z=5.0f;
 float lx=0.0f,ly=0.0f,lz=-1.0f;
@@ -16,6 +18,8 @@ int indexer = 0;
 int shipRotationAngle = 0;
 Plane mainPlane;
 std::vector <Bullet> bulletsArray;
+std::vector <EnemyPlane> enemyPlanes;
+
 
 
 std::vector <std::vector <TerrainTile> >  tiles;
@@ -39,14 +43,14 @@ void calculateFPS()
         fps = frameCount / (timeInterval / 1000.0f);
         
         //  Set time
-        previousTime = currentTime;
+        //previousTime = currentTime;
         
         //  Reset frame count
         frameCount = 0;
         totalFPS+=fps;
         iterations++;
-        std::cout<<"FPS: "<<fps<<"\n";
-        std::cout<<"Average FPS: "<<totalFPS/iterations<<"\n";
+        //std::cout<<"FPS: "<<fps<<"\n";
+        //std::cout<<"Average FPS: "<<totalFPS/iterations<<"\n";
     }
     
 }
@@ -105,7 +109,16 @@ void drawTrees(){
         }
     }
 }
-
+void advanceLevel(){
+    if ((currentTime-previousTime)>3000) {
+        previousTime = currentTime;
+        EnemyPlane newEnemy;
+        newEnemy.x = (rand()%400)-200;
+        newEnemy.y = 10;
+        newEnemy.z = (rand()%400)-200;
+        enemyPlanes.push_back(newEnemy);
+    }
+}
 void drawBuildings(){
     for (int i = 20; i <tiles.size()-20; i++) {
         for (int j = 20; j <tiles.size()-20; j++) {
@@ -196,6 +209,7 @@ void buildTerrain(){
     double tileSize = .8;
     for (double j = -200; j<200; j+=tileSize) {
         std::vector<TerrainTile> tiledRow;
+        double prevZ = 0.0;
         for (double i= -200; i<200; i+=tileSize) {
             TerrainTile newTile;
             newTile.red = 0.1;
@@ -205,7 +219,10 @@ void buildTerrain(){
             newTile.y = i;
             newTile.xMax = j+tileSize;
             newTile.yMax = i+tileSize;
+            //newTile.z = .7*(rand()%600-300)+1.4;
             newTile.z = 1*(rand()%600-300)+2;
+            //newTile.z = prevZ + .005*(rand()%600-300)-.008;
+            prevZ = newTile.z;
             newTile.z1=newTile.z;
             newTile.z2=newTile.z;
             newTile.z3=newTile.z;
@@ -222,6 +239,7 @@ void buildTerrain(){
         tiles.push_back(tiledRow);
     }
     for (int x = 1; x<200; x++) {
+        std::cout<<x;
         for (int i = 1; i <tiles.size()-5; i++) {
             for (int j = 1; j <tiles.size()-5; j++) {
                 float totalRed = 0;
@@ -305,13 +323,49 @@ void buildTerrain(){
     }
     std::cout<<tiles.size();
     std::cout<<tiles[0].size();
+    
+    //Save Terrain to file
+    std::ofstream myfile;
+    myfile.open ("Level1");
+    for (int i = 20; i <tiles.size()-20; i++) {
+        for (int j = 20; j <tiles.size()-20; j++) {
+            
+            myfile << tiles[i][j].x << ","<< tiles[i][j].xMax << "," << tiles[i][j].y << "," << tiles[i][j].yMax << ","<< tiles[i][j].z;
+            myfile << tiles[i][j].red << "," << tiles[i][j].green << "," << tiles[i][j].blue << "," << tiles[i][j].hasBuilding << "," << tiles[i][j].hasTree << "\n";
+            
+            
+        }
+    }
+    myfile.close();
 }
+void buildEnemyPlanes(){
+    for (int i = -100; i<101; i+=50) {
+        for (int j = -100; j<101; j+=50) {
+            EnemyPlane newEnemy;
+            newEnemy.x = i;
+            newEnemy.y = 10;
+            newEnemy.z = j;
+            newEnemy.adjustAttitudeFacingPlane(mainPlane);
+            enemyPlanes.push_back(newEnemy);
+        }
+    }
+}
+
+
 void initScene() {
 	glEnable(GL_DEPTH_TEST);
 }
 
 
 void drawPlane(){
+    
+    //Draw Enemy planes
+    for (int i = 0; i<enemyPlanes.size(); i++) {
+        enemyPlanes[i].movePlane();
+        enemyPlanes[i].drawPlane();
+        enemyPlanes[i].adjustAttitudeFacingPlane(mainPlane);
+        enemyPlanes[i].drawBullets();
+    }
     //Chase View
     
     y = mainPlane.y+2;
@@ -324,6 +378,8 @@ void drawPlane(){
     //Move and draw plane
     mainPlane.movePlane();
     mainPlane.drawPlane();
+    
+    
     
 }
 
@@ -392,6 +448,7 @@ void renderScene(void) {
     drawTrees();
     drawBuildings();
     drawPlane();
+    advanceLevel();
     
     
     
@@ -460,6 +517,7 @@ void releaseKey(int key, int x, int y) {
 
 int main(int argc, char **argv) {
     buildTerrain();
+    //buildEnemyPlanes();
     glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100,100);
@@ -493,6 +551,7 @@ int main(int argc, char **argv) {
     
 	glutIgnoreKeyRepeat(.1);
 	glutSpecialFunc(pressKey);
+    //glutKeyboardFunc(pressKey);
 	glutSpecialUpFunc(releaseKey);
     
 	glutDisplayFunc(renderScene);
