@@ -3,6 +3,9 @@
 *.DS_Store
 
 #Visual Studio files
+*.sln
+*.vcxproj
+*.vcxproj.filters
 *.[Oo]bj
 *.user
 *.aps
@@ -29,4 +32,5 @@ obj/
 [Bb]in
 [Dd]ebug*/
 [Rr]elease*/
+
 Ankh.NoLoad

@@ -16,10 +16,10 @@
 
 class EnemyPlane : public Plane {
     
-    int fireCount = 0;
-    double targetDisplaceX = (rand()%10)-5;
-    double targetDisplaceZ = (rand()%10)-5;
-    int fireNumber = rand()%100;
+    int fireCount;
+    double targetDisplaceX;
+    double targetDisplaceZ;
+    int fireNumber;
     std::vector<Bullet> bullets;
 public:
     EnemyPlane(){
@@ -32,7 +32,10 @@ public:
         speed = (rand()%10)*.02;
         planeYaw = 0;
         planeRed = 1;
-        
+		fireCount = 0;
+		targetDisplaceX = (rand()%10)-5;
+		targetDisplaceZ = (rand()%10)-5;
+		fireNumber = rand()%100;
     }
     
     void adjustAttitudeFacingPlane(Plane enemy){

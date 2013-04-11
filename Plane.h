@@ -26,7 +26,7 @@ public:
     double wingspan;
     double speed;
     double planeYaw;
-    bool planeRed = 0;
+    bool planeRed;
     Plane(){
         x = -100;
         y = 5;
