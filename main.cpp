@@ -10,20 +10,20 @@
 #include "Plane.h"
 #include "Bullet.h"
 #include "EnemyPlane.h"
-float angle=0.0,deltaAngle = 0.0,ratio,rotationAngleDelta = 0,rotationAngle = 0;
-float x=-10.0f,y=21.75f,z=5.0f;
-float lx=0.0f,ly=0.0f,lz=-1.0f;
+
+
+double frameCount, currentTime, fps, previousTime, totalFPS = 0, iterations = 0;
+float angle=0.0, deltaAngle = 0.0, ratio, rotationAngleDelta = 0, rotationAngle = 0;
+float x=-10.0f, y=21.75f, z=5.0f;
+float lx=0.0f, ly=0.0f, lz=-1.0f;
 int deltaMove = 0;
 int indexer = 0;
 int shipRotationAngle = 0;
+
 Plane mainPlane;
 std::vector <Bullet> bulletsArray;
 std::vector <EnemyPlane> enemyPlanes;
-
-
-
 std::vector <std::vector <TerrainTile> >  tiles;
-double frameCount,currentTime,fps,previousTime,totalFPS=0, iterations=0;
 
 void calculateFPS()
 {
@@ -55,13 +55,8 @@ void calculateFPS()
     
 }
 
-
-
-
-
-
-void orientMe(float ang) {
-    
+void orientMe(float ang)
+{
 	lx = sin(ang);
 	lz = -cos(ang);
 	glLoadIdentity();
@@ -70,7 +65,8 @@ void orientMe(float ang) {
 			  0.0f,1.0f,0.0f);
 }
 
-void moveMeFlat(int direction) {
+void moveMeFlat(int direction)
+{
 	x = x + direction*(lx)*0.1;
 	z = z + direction*(lz)*0.1;
 	glLoadIdentity();
@@ -78,7 +74,9 @@ void moveMeFlat(int direction) {
 		      x + lx,y + ly,z + lz,
 			  0.0f,1.0f,0.0f);
 }
-void rotateMe(float ang) {
+
+void rotateMe(float ang)
+{
     orientMe(ang);
 	ly = -sin(ang);
 	lx = -cos(ang);
@@ -90,11 +88,14 @@ void rotateMe(float ang) {
     
 }
 
-void drawTrees(){
-    for (int i = 20; i <tiles.size()-20; i++) {
-        for (int j = 20; j <tiles.size()-20; j++) {
+void drawTrees()
+{
+    for (int i = 20; i <tiles.size()-20; i++)
+	{
+        for (int j = 20; j <tiles.size()-20; j++)
+		{
             //std::cout<<tiles[i][j].hasTree;
-            if (tiles[i][j].hasTree&&(tiles[i][j].z>2)) {//,78 for clumping
+            if( tiles[i][j].hasTree && (tiles[i][j].z>2) ) {//,78 for clumping
                 //std::cout<<tiles[i][j].hasTree;
                 Tree t;
                 t.x = tiles[i][j].x;
@@ -105,12 +106,14 @@ void drawTrees(){
                 t.leavesWidth = .55;
                 t.drawTree();
             }
-            
         }
     }
 }
-void advanceLevel(){
-    if ((currentTime-previousTime)>3000) {
+
+void advanceLevel()
+{
+    if( (currentTime - previousTime) > 3000 )
+	{
         previousTime = currentTime;
         EnemyPlane newEnemy;
         newEnemy.x = (rand()%400)-200;
@@ -119,41 +122,58 @@ void advanceLevel(){
         enemyPlanes.push_back(newEnemy);
     }
 }
-void drawBuildings(){
-    for (int i = 20; i <tiles.size()-20; i++) {
-        for (int j = 20; j <tiles.size()-20; j++) {
-            if (tiles[i][j].hasBuilding>.7&&tiles[i][j].z>4) {
+
+void drawBuildings()
+{
+    for(int i = 20; i <tiles.size()-20; i++)
+	{
+        for(int j = 20; j <tiles.size()-20; j++)
+		{
+            if(tiles[i][j].hasBuilding>.7&&tiles[i][j].z>4)
+			{
                 int step = 0;
-                for (int x=-3; x<8; x++) {
-                    for (int y=-3; y<8; y++) {
-                        if (x==0&&y==0) {
+                for (int x=-3; x<8; x++)
+				{
+                    for (int y=-3; y<8; y++)
+					{
+                        if( x == 0 && y == 0 )
+						{
                             continue;
                         }
                         
                         tiles[i+x][j+y].hasBuilding = 0;
                         tiles[i+x][j+y].hasTree = 0;
-                        if (indexer<2) {
-                            for (int z = 0; z<3; z++) {
+
+                        if(indexer < 2)
+						{
+                            for (int z = 0; z<3; z++)
+							{
                                 tiles[i+x][j+y].red = (.2+tiles[i+x][j+y].red)/2;
                                 tiles[i+x][j+y].green= (.2+tiles[i+x][j+y].green)/2;
                                 tiles[i+x][j+y].blue= (.2+tiles[i+x][j+y].blue)/2;
                             }
                         }
+
                         step++;
-                        step=step%5;
-                        if (x<-1||y<-1||x>5||y>5) {
+                        step = step%5;
+
+                        if( (x < -1) || (y < -1) || (x > 5) || (y > 5) )
+						{
                             tiles[i+x][j+y].red = (.1+tiles[i+x][j+y].red)/2;
                             tiles[i+x][j+y].green= (.1+tiles[i+x][j+y].green)/2;
                             tiles[i+x][j+y].blue= (.1+tiles[i+x][j+y].blue)/2;
                         }
-                        if ((x==-3||y==-3)&&step==2) {
+                        if( (x == -3 || y == -3 ) && step == 2)
+						{
                             tiles[i+x-1][j+y-1].hasTree=1;
                         }
-                        if ((x==7||y==7)&&step==2) {
+                        if ( (x == 7 || y == 7 ) && step == 2)
+						{
                             tiles[i+x+1][j+y+1].hasTree=1;
                         }
                     }
                 }
+
                 Building t;
                 t.x = tiles[i][j].x;
                 t.y = tiles[i][j].y;
@@ -164,13 +184,15 @@ void drawBuildings(){
         }
     }
 }
+
 void changeSize(int w, int h)
-{
-    
+{ 
 	// Prevent a divide by zero, when window is too short
 	// (you cant make a window of zero width).
 	if(h == 0)
+	{
 		h = 1;
+	}
     
 	ratio = 1.0f * w / h;
 	// Reset the coordinate system before modifying
@@ -197,7 +219,7 @@ GLuint createDL() {
 	flightsimDL = glGenLists(1);
     
 	// start list
-	glNewList(flightsimDL,GL_COMPILE);
+	glNewList(flightsimDL, GL_COMPILE);
     
     
 	// endList
@@ -205,12 +227,18 @@ GLuint createDL() {
     
 	return(flightsimDL);
 }
-void buildTerrain(){
-    double tileSize = .8;
-    for (double j = -200; j<200; j+=tileSize) {
+
+void buildTerrain()\
+{
+	double tileSize = 0.8;
+
+    for(double j = -200; j < 200; j+=tileSize)
+	{
         std::vector<TerrainTile> tiledRow;
         double prevZ = 0.0;
-        for (double i= -200; i<200; i+=tileSize) {
+
+        for(double i = -200; i < 200; i+=tileSize)
+		{
             TerrainTile newTile;
             newTile.red = 0.1;
             newTile.green = 0.15;
@@ -228,49 +256,87 @@ void buildTerrain(){
             newTile.z3=newTile.z;
             newTile.z4=newTile.z;
             newTile.zMax = newTile.z;
-            if ((rand()%1000)>992) {
+
+            if( (rand() % 1000) > 992)
+			{
                 newTile.hasTree = 1;
             }
-            if ((rand()%10000)>5000) {
+
+            if( (rand() % 10000 ) > 5000)
+			{
                 newTile.hasBuilding = 1;
             }
-            tiledRow.push_back(newTile);
+
+            tiledRow.push_back(newTile);  //add new tile
         }
-        tiles.push_back(tiledRow);
+
+        tiles.push_back(tiledRow);  //add new row of tiles to 2D data structure
     }
-    for (int x = 1; x<200; x++) {
-        std::cout<<x;
-        for (int i = 1; i <tiles.size()-5; i++) {
-            for (int j = 1; j <tiles.size()-5; j++) {
+
+    for(int x = 1; x < 200; x++)
+	{
+        std::cout << x;
+
+        for(int i = 1; i < tiles.size()-5; i++)
+		{
+            for (int j = 1; j < tiles.size()-5; j++)
+			{
                 float totalRed = 0;
                 totalRed += tiles[i][j-1].red;
                 totalRed += tiles[i+1][j].red;
                 totalRed += tiles[i][j+1].red;
                 totalRed += tiles[i-1][j].red;
-                float newRed = totalRed/4+.00012*((rand()%1000)-500);
-                if (newRed>.15) newRed = .15;
-                if (newRed<0) newRed = 0;
+
+                float newRed = totalRed / 4 + 0.00012 * ((rand() % 1000) - 500);
+
+                if(newRed>.15)
+				{
+					newRed = .15;
+				}
+
+                if(newRed < 0)
+				{
+					newRed = 0;
+				}
+
                 tiles[i][j].red = newRed;
                 
-                float totalGreen = 0;
-                totalGreen += tiles[i][j-1].green;
-                totalGreen += tiles[i+1][j].green;
-                totalGreen += tiles[i][j+1].green;
-                totalGreen += tiles[i-1][j].green;
-                float newGreen = totalGreen/4+.000002*((rand()%1000)-500);
-                if (newGreen>.3) newGreen = .3;
-                if (newGreen<0) newGreen = 0;
-                tiles[i][j].green = newGreen;
-                
+				float totalGreen = 0;
+				totalGreen += tiles[i][j-1].green;
+				totalGreen += tiles[i+1][j].green;
+				totalGreen += tiles[i][j+1].green;
+				totalGreen += tiles[i-1][j].green;
+				float newGreen = totalGreen / 4+ 0.000002 * ((rand() % 1000) - 500);
+
+				if (newGreen > 0.3) 
+				{
+					newGreen = 0.3;
+				}
+
+				if(newGreen < 0)
+				{
+					newGreen = 0;
+				}
+
+				tiles[i][j].green = newGreen;
                 
                 float totalBlue = 0;
                 totalBlue += tiles[i][j-1].blue;
                 totalBlue += tiles[i+1][j].blue;
                 totalBlue += tiles[i][j+1].blue;
                 totalBlue += tiles[i-1][j].blue;
-                float newBlue = totalBlue/4+.00006*((rand()%1000)-500);
-                if (newBlue>.05) newBlue = .05;
-                if (newBlue<0) newBlue = 0;
+                float newBlue = totalBlue / 4+ 0.00006 * ((rand() % 1000) - 500);
+
+                if(newBlue > 0.05)
+				{
+					newBlue = 0.05;
+				}
+
+                if(newBlue < 0)
+				{
+					newBlue = 0;
+				}
+
                 tiles[i][j].blue = newBlue;
                 
                 //Forest creation
@@ -279,9 +345,16 @@ void buildTerrain(){
                 totalTree += tiles[i+1][j].hasTree;
                 totalTree += tiles[i][j+1].hasTree;
                 totalTree += tiles[i-1][j].hasTree;
-                float newTree = totalTree/4 +0.00045*((rand()%1000)-500);
-                if (newTree>.8) newTree = .8;
-                if (newTree<0) newTree = 0;
+                float newTree = totalTree / 4 + 0.00045 * ((rand() % 1000) - 500);
+                if(newTree > 0.8)
+				{
+					newTree = 0.8;
+				}
+
+                if(newTree < 0)
+				{
+					newTree = 0;
+				}
                 //tiles[i][j].hasTree = newTree;
                 
                 float totalBuilding = 0;
@@ -289,30 +362,41 @@ void buildTerrain(){
                 totalBuilding += tiles[i+1][j].hasBuilding;
                 totalBuilding += tiles[i][j+1].hasBuilding;
                 totalBuilding += tiles[i-1][j].hasBuilding;
-                float newBuilding = totalBuilding/4 +0.00015*((rand()%1000)-500);
-                if (newBuilding>.8) newBuilding = .8;
-                if (newBuilding<0) newBuilding = 0;
+                float newBuilding = totalBuilding / 4 +0.00015 * ((rand() % 1000) - 500);
+
+                if(newBuilding > 0.8)
+				{
+					newBuilding = 0.8;
+				}
+
+                if(newBuilding < 0)
+				{
+					newBuilding = 0;
+				}
+
                 tiles[i][j].hasBuilding = newBuilding;
                 
                 //Terrain Smoothing
                 float zTotal = 0;
                 zTotal += tiles[i][j-1].z;
-                zTotal  += tiles[i+1][j].z;
-                zTotal  += tiles[i][j+1].z;
-                zTotal  += tiles[i-1][j].z;
-                tiles[i][j].z = zTotal/4 +(.00016*(rand()%1000-500));
+                zTotal += tiles[i+1][j].z;
+                zTotal += tiles[i][j+1].z;
+                zTotal += tiles[i-1][j].z;
+                tiles[i][j].z = zTotal / 4 + (0.00016 * (rand() % 1000 - 500));
                 tiles[i][j].z1 = tiles[i][j].z;
                 tiles[i-1][j].z4 = tiles[i][j].z;
                 tiles[i-1][j-1].z3 = tiles[i][j].z;
                 tiles[i][j-1].z2 = tiles[i][j].z;
-                if (i==1|j==1|(i==tiles.size()-2)|(j==tiles.size()-2)){
+                if ( (i==1) | (j==1) | (i == tiles.size() - 2) | (j == tiles.size() - 2))
+				{
                     tiles[i][j].z2 = z;
                     tiles[i][j].z3 = z;
                     tiles[i][j].z4 = z;
                 }
                 
                 
-                //if (tiles[i][j].z<.2) {
+                //if (tiles[i][j].z<.2)
+				//{
                 //    tiles[i][j].red = .9;
                 //    tiles[i][j].green = .7;
                 //    tiles[i][j].blue = .62;
@@ -321,14 +405,18 @@ void buildTerrain(){
         }
         
     }
+
     std::cout<<tiles.size();
     std::cout<<tiles[0].size();
     
     //Save Terrain to file
     std::ofstream myfile;
     myfile.open ("Level1");
-    for (int i = 20; i <tiles.size()-20; i++) {
-        for (int j = 20; j <tiles.size()-20; j++) {
+
+    for (int i = 20; i <tiles.size() - 20; i++)
+	{
+        for (int j = 20; j <tiles.size() - 20; j++)
+		{
             
             myfile << tiles[i][j].x << ","<< tiles[i][j].xMax << "," << tiles[i][j].y << "," << tiles[i][j].yMax << ","<< tiles[i][j].z;
             myfile << tiles[i][j].red << "," << tiles[i][j].green << "," << tiles[i][j].blue << "," << tiles[i][j].hasBuilding << "," << tiles[i][j].hasTree << "\n";
@@ -336,11 +424,16 @@ void buildTerrain(){
             
         }
     }
+
     myfile.close();
 }
-void buildEnemyPlanes(){
-    for (int i = -100; i<101; i+=50) {
-        for (int j = -100; j<101; j+=50) {
+
+void buildEnemyPlanes()
+{
+    for (int i = -100; i < 101; i+=50)
+	{
+        for (int j = -100; j < 101; j+=50)
+		{
             EnemyPlane newEnemy;
             newEnemy.x = i;
             newEnemy.y = 10;
@@ -351,16 +444,17 @@ void buildEnemyPlanes(){
     }
 }
 
-
-void initScene() {
+void initScene()
+{
 	glEnable(GL_DEPTH_TEST);
 }
 
 
-void drawPlane(){
-    
+void drawPlane()
+{    
     //Draw Enemy planes
-    for (int i = 0; i<enemyPlanes.size(); i++) {
+    for (int i = 0; i < enemyPlanes.size(); i++)
+	{
         enemyPlanes[i].movePlane();
         enemyPlanes[i].drawPlane();
         enemyPlanes[i].adjustAttitudeFacingPlane(mainPlane);
@@ -369,35 +463,34 @@ void drawPlane(){
     //Chase View
     
     y = mainPlane.y+2;
-    double planeYawRad = mainPlane.planeYaw*3.14159262/180;
+    double planeYawRad = mainPlane.planeYaw * 3.14159262 / 180;
     z = mainPlane.z+30*sin(planeYawRad);
     x = mainPlane.x-30*cos(planeYawRad);
-    orientMe(1.57-planeYawRad);
+    orientMe(1.57 - planeYawRad);
     moveMeFlat(0);
     
     //Move and draw plane
     mainPlane.movePlane();
     mainPlane.drawPlane();
-    
-    
-    
 }
 
-void drawWater(float maxX,float maxY,float minX,float minY){
+void drawWater(float maxX, float maxY, float minX, float minY)
+{
     TerrainTile water;
     water.red = 0;
     water.green = 0;
     water.blue = .1;
     water.alpha = .4;
-    water.z1 = 0; water.z2 = 0; water.z3 = 0; water.z4 = 0;
+    water.z1 = 0;
+	water.z2 = 0;
+	water.z3 = 0;
+	water.z4 = 0;
     water.x=minX;
     water.y=minY;
     water.xMax =maxX;
     water.yMax =maxY;
     water.drawTile();
-    
 }
-
 
 void renderScene(void) {
     
@@ -408,40 +501,67 @@ void renderScene(void) {
     //glTranslatef(-lightpos[0], -lightpos[1], -lightpos[2]);
     //glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
 	if (deltaMove)
+	{
 		moveMeFlat(deltaMove);
-	if (deltaAngle) {
+	}
+
+	if (deltaAngle)
+	{
 		angle += deltaAngle;
 		orientMe(angle);
         //rotateMe(angle);
 	}
-    if (rotationAngleDelta) {
+
+    if (rotationAngleDelta)
+	{
         rotationAngle+=rotationAngleDelta;
         rotationAngleDelta=0;
         rotateMe(rotationAngle);
     }
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    // Draw ground
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  //draw ground
     
-    for (int i = 0; i<bulletsArray.size(); i++) {
+    for (int i = 0; i < bulletsArray.size(); i++)
+	{
         bulletsArray[i].moveBullet();
         bulletsArray[i].drawBullet();
     }
 	
-    float minX=200000,maxX=0,minY=20000,maxY=0;
+    float minX=200000, maxX=0, minY=20000, maxY=0;
     glBegin(GL_QUADS);
-    for (int i = 20; i <tiles.size()-20; i++) {
-        for (int j = 20; j <tiles.size()-20; j++) {
-            if(tiles[i][j].xMax>maxX) maxX = tiles[i][j].xMax;
-            if(tiles[i][j].yMax>maxY) maxY = tiles[i][j].yMax;
-            if(tiles[i][j].x<minX) minX = tiles[i][j].x;
-            if(tiles[i][j].y<minY) minY = tiles[i][j].y;
-            if (tiles[i][j].z>-.7) {
+    for (int i = 20; i <tiles.size() - 20; i++)
+	{
+        for (int j = 20; j <tiles.size() - 20; j++)
+		{
+            if(tiles[i][j].xMax > maxX)
+			{
+				maxX = tiles[i][j].xMax;
+			}
+
+            if(tiles[i][j].yMax > maxY)
+			{
+				maxY = tiles[i][j].yMax;
+			}
+
+            if(tiles[i][j].x < minX)
+			{
+				minX = tiles[i][j].x;
+			}
+
+            if(tiles[i][j].y < minY)
+			{
+				minY = tiles[i][j].y;
+			}
+
+            if (tiles[i][j].z > -0.7)
+			{
                 tiles[i][j].drawTile();
             }
             
             
         }
     }
+
     drawWater(maxX,maxY,minX,minY);
 	glEnd();
     
@@ -450,72 +570,99 @@ void renderScene(void) {
     drawPlane();
     advanceLevel();
     
-    
-    
     calculateFPS();
 	glutSwapBuffers();
-    //std::cout<<"hello";
+
     indexer++;
-    
 }
 
 
 
-void pressKey(int key, int x, int y) {
-	switch (key) {
+void pressKey(int key, int x, int y)
+{
+	switch (key)
+	{
 		case GLUT_KEY_LEFT :
-			deltaAngle = -0.014f;break;
+			deltaAngle = -0.014f;
+			break;
+
 		case GLUT_KEY_RIGHT :
-			deltaAngle = 0.014f;break;
+			deltaAngle = 0.014f;
+			break;
+
 		case GLUT_KEY_UP :
-			deltaMove = 3;break;
+			deltaMove = 3;
+			break;
+
 		case GLUT_KEY_DOWN :
-			deltaMove = -3;break;
+			deltaMove = -3;
+			break;
+
         case 'v':
-            rotationAngleDelta = -.008;break;
+            rotationAngleDelta = -.008;
+			break;
+
         case 'c':
-            rotationAngleDelta = .008;break;
+            rotationAngleDelta = .008;
+			break;
+
         case 'i':
-            mainPlane.pitch-=6; break;
+            mainPlane.pitch-=6;
+			break;
+
         case 'k':
-            mainPlane.pitch+=6; break;
+            mainPlane.pitch+=6;
+			break;
+
         case 'j':
-            mainPlane.roll-=10;break;
+            mainPlane.roll-=10;
+			break;
         case 'l':
-            mainPlane.roll+=10;break;
+            mainPlane.roll+=10;
+			break;
+
         case 'p':
-            mainPlane.speed+=.01;break;
+            mainPlane.speed+=.01;
+			break;
+
         case 'o':
-            mainPlane.speed-=.01;break;
+            mainPlane.speed-=.01;
+			break;
+
         case 'u':
             Bullet newBullet = mainPlane.fireBullet();
             bulletsArray.push_back(newBullet);
             break;
-        
 	}
 }
 
 void releaseKey(int key, int x, int y) {
-    
-	switch (key) {
+	switch (key)
+	{
 		case GLUT_KEY_LEFT :
 		case GLUT_KEY_RIGHT :
-			deltaAngle = 0.0f;break;
+			deltaAngle = 0.0f;
+			break;
+
 		case GLUT_KEY_UP :
 		case GLUT_KEY_DOWN :
-			deltaMove = 0;break;
+			deltaMove = 0;
+			break;
+
         case 'm':
-            rotationAngleDelta  = 0;break;
+            rotationAngleDelta  = 0;
+			break;
+
         case 'K':
-            rotationAngleDelta = 0;break;
-        
-            
+            rotationAngleDelta = 0;
+			break;
 	}
 }
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     buildTerrain();
     //buildEnemyPlanes();
     glutInit(&argc, argv);
@@ -549,7 +696,7 @@ int main(int argc, char **argv) {
     glEnable(GL_COLOR_MATERIAL);
     glClearColor(0.0f, 0.0f, .3f, .5f);
     
-	glutIgnoreKeyRepeat(.1);
+	glutIgnoreKeyRepeat(0.1);
 	glutSpecialFunc(pressKey);
     //glutKeyboardFunc(pressKey);
 	glutSpecialUpFunc(releaseKey);
