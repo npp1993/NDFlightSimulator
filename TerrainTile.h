@@ -38,23 +38,30 @@ public:
     double hasTree;
     double hasBuilding;
 
-    TerrainTile(){
+    TerrainTile()
+	{
         alpha = 1;
+
         x = 0;
-        xMax = 0;
         y = 0;
+		z = 0;
+
+		xMax = 0;
         yMax = 0;
-        z = 0;
         zMax = 0;
+
         z1 = 0;
         z2 = 0;
         z3 = 0;
         z4 = 0;
+
 		hasTree = 0;
 		hasBuilding = 0;
     }
-    void drawTile(){
-        glColor4f(red,green,blue,alpha);
+
+    void drawTile()
+	{
+        glColor4f(red, green, blue, alpha);
         glVertex3f(x, z1, y);
         glVertex3f(x, z2, yMax);
         glVertex3f(xMax, z3, yMax);

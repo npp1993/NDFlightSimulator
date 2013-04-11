@@ -228,34 +228,43 @@ GLuint createDL() {
 	return(flightsimDL);
 }
 
-void buildTerrain()\
+void buildTerrain()
 {
-	double tileSize = 0.8;
+	double tileSize = 1.0;  //default tile length and width
 
     for(double j = -200; j < 200; j+=tileSize)
 	{
         std::vector<TerrainTile> tiledRow;
+
         double prevZ = 0.0;
 
         for(double i = -200; i < 200; i+=tileSize)
 		{
-            TerrainTile newTile;
+			TerrainTile newTile;
+
+			//initialize tile base colors
             newTile.red = 0.1;
             newTile.green = 0.15;
             newTile.blue = 0.05;
+
+			//set tile x and y coordinates
             newTile.x = j;
             newTile.y = i;
-            newTile.xMax = j+tileSize;
-            newTile.yMax = i+tileSize;
-            //newTile.z = .7*(rand()%600-300)+1.4;
+            newTile.xMax = j + tileSize;
+            newTile.yMax = i + tileSize;
+
             newTile.z = 1*(rand()%600-300)+2;
-            //newTile.z = prevZ + .005*(rand()%600-300)-.008;
+
             prevZ = newTile.z;
             newTile.z1=newTile.z;
             newTile.z2=newTile.z;
             newTile.z3=newTile.z;
             newTile.z4=newTile.z;
             newTile.zMax = newTile.z;
+
+            //newTile.z = .7*(rand()%600-300)+1.4;
+			//newTile.z = prevZ + .005*(rand()%600-300)-.008;
+
 
             if( (rand() % 1000) > 992)
 			{
@@ -273,6 +282,8 @@ void buildTerrain()\
         tiles.push_back(tiledRow);  //add new row of tiles to 2D data structure
     }
 
+
+	//refine tiles
     for(int x = 1; x < 200; x++)
 	{
         std::cout << x;
@@ -289,9 +300,9 @@ void buildTerrain()\
 
                 float newRed = totalRed / 4 + 0.00012 * ((rand() % 1000) - 500);
 
-                if(newRed>.15)
+                if(newRed > 0.15)
 				{
-					newRed = .15;
+					newRed = 0.15;
 				}
 
                 if(newRed < 0)
@@ -339,13 +350,15 @@ void buildTerrain()\
 
                 tiles[i][j].blue = newBlue;
                 
-                //Forest creation
+                //forest creation
                 float totalTree = 0;
                 totalTree += tiles[i][j-1].hasTree;
                 totalTree += tiles[i+1][j].hasTree;
                 totalTree += tiles[i][j+1].hasTree;
                 totalTree += tiles[i-1][j].hasTree;
+
                 float newTree = totalTree / 4 + 0.00045 * ((rand() % 1000) - 500);
+
                 if(newTree > 0.8)
 				{
 					newTree = 0.8;
@@ -357,12 +370,14 @@ void buildTerrain()\
 				}
                 //tiles[i][j].hasTree = newTree;
                 
+				//building creation
                 float totalBuilding = 0;
                 totalBuilding += tiles[i][j-1].hasBuilding;
                 totalBuilding += tiles[i+1][j].hasBuilding;
                 totalBuilding += tiles[i][j+1].hasBuilding;
                 totalBuilding += tiles[i-1][j].hasBuilding;
-                float newBuilding = totalBuilding / 4 +0.00015 * ((rand() % 1000) - 500);
+
+                float newBuilding = totalBuilding / 4 + 0.00015 * ((rand() % 1000) - 500);
 
                 if(newBuilding > 0.8)
 				{
@@ -376,7 +391,7 @@ void buildTerrain()\
 
                 tiles[i][j].hasBuilding = newBuilding;
                 
-                //Terrain Smoothing
+                //terrain smoothing
                 float zTotal = 0;
                 zTotal += tiles[i][j-1].z;
                 zTotal += tiles[i+1][j].z;
@@ -406,10 +421,11 @@ void buildTerrain()\
         
     }
 
-    std::cout<<tiles.size();
-    std::cout<<tiles[0].size();
+    //std::cout<<tiles.size();
+    //std::cout<<tiles[0].size();
     
-    //Save Terrain to file
+    //save terrain to file
+	/*
     std::ofstream myfile;
     myfile.open ("Level1");
 
@@ -426,6 +442,7 @@ void buildTerrain()\
     }
 
     myfile.close();
+	*/
 }
 
 void buildEnemyPlanes()
