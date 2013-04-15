@@ -12,6 +12,7 @@
 #include <math.h>
 #include "GraphicsHeader.h"
 #include "Bullet.h"
+#include <vector>
 
 class Plane {
     
@@ -27,6 +28,9 @@ public:
     double speed;
     double planeYaw;
     bool planeRed = 0;
+    bool planeBlue = 0;
+    int dead = 0;
+    //std::vector<Bullet> userBullets;
     Plane(){
         x = -100;
         y = 5;
@@ -34,7 +38,7 @@ public:
         roll = 0;
         pitch = 0;
         wingspan = 8;
-        speed = .2;
+        speed = .8;
         planeYaw = 0;
         planeRed = 0;
     }
@@ -72,7 +76,14 @@ public:
         
         double pitchRad = (pitch*pi)/180;
         //yaw += asin(sin(rollRad)*sin(pitchRad))*6;
-        double planeYawDelta = (roll/30*pitch/30)/2;
+        double yawPitchCotribution = pitch;
+        if (yawPitchCotribution>90) {
+            yawPitchCotribution-=90;
+        }
+        else if (yawPitchCotribution>50) {
+            yawPitchCotribution = 50;
+        }
+        double planeYawDelta = (roll/30*yawPitchCotribution/30)/2;
         if (planeYawDelta>2) {
             planeYawDelta = 2;
         }
@@ -99,6 +110,8 @@ public:
         glColor3f(.16, .16, .16);
         if (planeRed) {
             glColor3f(.3, .1, .1);
+        }else if (planeBlue){
+            glColor3f(.1, .1, .3);
         }
         
         glPushMatrix();
@@ -173,6 +186,12 @@ public:
         shot.moveBullet();
         return shot;
     }
+    
+    void userFire(){
+        Bullet newBullet = fireBullet();
+        //userBullets.push_back(newBullet);
+    }
+    
     
 };
 

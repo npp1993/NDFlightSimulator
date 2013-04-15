@@ -9,7 +9,7 @@
 #include "Building.h"
 #include "Plane.h"
 #include "Bullet.h"
-#include "EnemyPlane.h"
+#include "ComputerPlane.h"
 float angle=0.0,deltaAngle = 0.0,ratio,rotationAngleDelta = 0,rotationAngle = 0;
 float x=-10.0f,y=21.75f,z=5.0f;
 float lx=0.0f,ly=0.0f,lz=-1.0f;
@@ -18,7 +18,8 @@ int indexer = 0;
 int shipRotationAngle = 0;
 Plane mainPlane;
 std::vector <Bullet> bulletsArray;
-std::vector <EnemyPlane> enemyPlanes;
+std::vector <ComputerPlane> enemyPlanes;
+std::vector <ComputerPlane> friendlyPlanes;
 
 
 
@@ -112,12 +113,36 @@ void drawTrees(){
 void advanceLevel(){
     if ((currentTime-previousTime)>3000) {
         previousTime = currentTime;
-        EnemyPlane newEnemy;
+        ComputerPlane newFriend;
+        newFriend.x = (rand()%400)-200;
+        newFriend.y = (rand()%20)+45;
+        newFriend.z = (rand()%400)-200;
+        
+
+        ComputerPlane newEnemy;
         newEnemy.x = (rand()%400)-200;
-        newEnemy.y = 10;
+        newEnemy.y = (rand()%20)+45;
         newEnemy.z = (rand()%400)-200;
+        //newEnemy.enemyPlane = &mainPlane;
+        //newEnemy.huntEnemyPlane();
+        //enemyPlanes.push_back(newEnemy);
+        newEnemy.planeRed = 1;
+        newFriend.planeBlue = 1;
+        //Determine friends enemy
+        if (friendlyPlanes.size()==0) {
+            return;
+        }
+        int i = rand()%(enemyPlanes.size()-1);
+        newFriend.enemyPlane = &enemyPlanes[i];
+        i = rand()%(friendlyPlanes.size()-1);
+        newEnemy.enemyPlane = &friendlyPlanes[i];
+        newFriend.huntEnemyPlane();
+        newEnemy.huntEnemyPlane();
         enemyPlanes.push_back(newEnemy);
+        friendlyPlanes.push_back(newFriend);
+        
     }
+    
 }
 void drawBuildings(){
     for (int i = 20; i <tiles.size()-20; i++) {
@@ -339,14 +364,30 @@ void buildTerrain(){
     myfile.close();
 }
 void buildEnemyPlanes(){
-    for (int i = -100; i<101; i+=50) {
-        for (int j = -100; j<101; j+=50) {
-            EnemyPlane newEnemy;
+    for (int i = -100; i<101; i+=151) {
+        for (int j = -100; j<101; j+=151) {
+            ComputerPlane newEnemy;
             newEnemy.x = i;
             newEnemy.y = 10;
             newEnemy.z = j;
-            newEnemy.adjustAttitudeFacingPlane(mainPlane);
+            newEnemy.planeRed =1;
+            Plane* mainPlanePointer = &mainPlane;
+            newEnemy.enemyPlane = mainPlanePointer;
+            newEnemy.huntEnemyPlane();
             enemyPlanes.push_back(newEnemy);
+        }
+    }
+    for (int i = -100; i<101; i+=151) {
+        for (int j = -100; j<101; j+=151) {
+            ComputerPlane newFriend;
+            newFriend.x = i+2;
+            newFriend.planeBlue = 1;
+            newFriend.y = 10;
+            newFriend.z = j;
+            Plane* mainPlanePointer = &enemyPlanes[rand()%3];
+            newFriend.enemyPlane = mainPlanePointer;
+            newFriend.huntEnemyPlane();
+            friendlyPlanes.push_back(newFriend);
         }
     }
 }
@@ -363,8 +404,23 @@ void drawPlane(){
     for (int i = 0; i<enemyPlanes.size(); i++) {
         enemyPlanes[i].movePlane();
         enemyPlanes[i].drawPlane();
-        enemyPlanes[i].adjustAttitudeFacingPlane(mainPlane);
+        //enemyPlanes[i].adjustAttitudeFacingPlane(mainPlane);
+        enemyPlanes[i].huntEnemyPlane();
         enemyPlanes[i].drawBullets();
+        if (enemyPlanes[i].enemyPlane->dead) {
+            enemyPlanes[i].enemyPlane = &friendlyPlanes[(rand()%(friendlyPlanes.size()-1))];
+        }
+    }
+    //Draw Friendly Planes
+    for (int i = 0; i<friendlyPlanes.size(); i++) {
+        friendlyPlanes[i].movePlane();
+        friendlyPlanes[i].drawPlane();
+        //friendlyPlanes[i].adjustAttitudeFacingPlane(mainPlane);
+        friendlyPlanes[i].huntEnemyPlane();
+        friendlyPlanes[i].drawBullets();
+        if (friendlyPlanes[i].enemyPlane->dead) {
+            friendlyPlanes[i].enemyPlane = &enemyPlanes[(rand()%(enemyPlanes.size()-1))];
+        }
     }
     //Chase View
     
@@ -484,10 +540,12 @@ void pressKey(int key, int x, int y) {
         case 'l':
             mainPlane.roll+=10;break;
         case 'p':
-            mainPlane.speed+=.01;break;
+            mainPlane.speed+=.1;break;
         case 'o':
-            mainPlane.speed-=.01;break;
+            mainPlane.speed-=.1;break;
         case 'u':
+            //mainPlane.userFire();
+    
             Bullet newBullet = mainPlane.fireBullet();
             bulletsArray.push_back(newBullet);
             break;
@@ -517,7 +575,7 @@ void releaseKey(int key, int x, int y) {
 
 int main(int argc, char **argv) {
     buildTerrain();
-    //buildEnemyPlanes();
+    buildEnemyPlanes();
     glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100,100);
