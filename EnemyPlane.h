@@ -21,6 +21,7 @@ class EnemyPlane : public Plane {
     double targetDisplaceZ;
     int fireNumber;
     std::vector<Bullet> bullets;
+
 public:
     EnemyPlane(){
         x = -50;

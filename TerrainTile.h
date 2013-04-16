@@ -12,94 +12,66 @@
 #include <iostream>
 #include "GraphicsHeader.h"
 #include <math.h>
-//#include <random>
 #include <iostream>
 #include <vector>
 
-
-
 class TerrainTile {
     
-public:
-    float x;
-    float xMax;
-    float y;
-    float yMax;
-    float z;
-    float zMax;
-    float red;
-    float green;
-    float blue;
-    float z1;
-    float z2;
-    float z3;
-    float z4;
-    float alpha;
-    double hasTree;
-    double hasBuilding;
+	public:
 
-    TerrainTile()
-	{
-        alpha = 1;
+		float x;
+		float y;
 
-        x = 0;
-        y = 0;
-		z = 0;
+		float tileSize;
 
-		xMax = 0;
-        yMax = 0;
-        zMax = 0;
+		float xMax;
+		float yMax;
 
-        z1 = 0;
-        z2 = 0;
-        z3 = 0;
-        z4 = 0;
+		float red;
+		float green;
+		float blue;
+		float alpha;
 
-		hasTree = 0;
-		hasBuilding = 0;
-    }
+		float z1;
+		float z2;
+		float z3;
+		float z4;
 
-    void drawTile()
-	{
-        glColor4f(red, green, blue, alpha);
-        glVertex3f(x, z1, y);
-        glVertex3f(x, z2, yMax);
-        glVertex3f(xMax, z3, yMax);
-        glVertex3f(xMax, z4, y);
-        
-        /*Useful for tile orientation testing
-         double baseX = x;
-         double baseY = y;
-         glColor3f(1,1,1);
-         baseX = x;
-         baseY = y;
-         glVertex3f(baseX, 2, baseY);
-         glVertex3f(baseX, 2, baseY+2);
-         glVertex3f(baseX+2, 2, baseY+2);
-         glVertex3f(baseX+2, 2, baseY);
-         glColor3f(1,0,0);
-         baseX = x;
-         baseY = yMax;
-         glVertex3f(baseX, 1, baseY);
-         glVertex3f(baseX, 1, baseY+2);
-         glVertex3f(baseX+2, 1, baseY+2);
-         glVertex3f(baseX+2, 1, baseY);
-         glColor3f(0,1,0);
-         baseX = xMax;
-         baseY = yMax;
-         glVertex3f(baseX, 1.5, baseY);
-         glVertex3f(baseX, 1.5, baseY+2);
-         glVertex3f(baseX+2, 1.5, baseY+2);
-         glVertex3f(baseX+2, 1.5, baseY);
-         glColor3f(0,0,1);
-         baseX = xMax;
-         baseY = y;
-         glVertex3f(baseX, 1.7, baseY);
-         glVertex3f(baseX, 1.7, baseY+2);
-         glVertex3f(baseX+2, 1.7, baseY+2);
-         glVertex3f(baseX+2, 1.7, baseY);
-         */
-    }
-    
+		double hasTree;
+		double hasBuilding;
+
+		TerrainTile(float i, float j, float size)
+		{
+			x = i;
+			y = j;
+
+			tileSize = size;
+
+			xMax = x + tileSize;
+			yMax = y + tileSize;
+
+			z1 = 0;
+			z2 = 0;
+			z3 = 0;
+			z4 = 0;
+
+			red = 0.1;
+			green = 0.15;
+			blue = 0.05;
+			alpha = 1;
+
+			hasTree = 0;
+			hasBuilding = 0;
+		}
+
+		void drawTile(float xOff, float yOff)
+		{
+			//draw tiles relative to the x and y offset of the user's plane
+			glColor4f(red, green, blue, alpha);
+			glVertex3f(x + xOff, z1, y + yOff);
+			glVertex3f(x+xOff, z2, yMax+yOff);
+			glVertex3f(xMax+xOff, z3, yMax+yOff);
+			glVertex3f(xMax+xOff, z4, y+yOff);
+		}
 };
 #endif /* defined(__GraphicsExample__TerrainTile__) */

@@ -16,9 +16,9 @@
 class Plane {
    
 	public:
-		double x;
-		double y;
-		double z;
+		float x;
+		float y;
+		float z;
 		double roll;
 		double pitch;
 		double yaw;
@@ -29,8 +29,8 @@ class Plane {
 
 		Plane()
 		{
-			x = -100;
-			y = 5;
+			x = 0;
+			y = 10;
 			z = 0;
 			roll = 0;
 			pitch = 0;
@@ -74,8 +74,8 @@ class Plane {
 			double pi = 3.14159262;
         
 			//yaw is the cross product of roll and pitch
-			int neg =  -2*((roll>90) || (roll<-90))+1;
-			double rollRad = (roll*pi)/180;
+			int neg = -2 * ( (roll > 90) || (roll < -90)) + 1;
+			double rollRad = (roll * pi) / 180;
 
 			if (rollRad > pi/2)
 			{
@@ -99,19 +99,16 @@ class Plane {
 			{
 				planeYawDelta = -2;
 			}
+
 			planeYaw-=planeYawDelta;
 			double yawRad = (planeYaw*pi)/180;
-			//yawRad = asin(sin(rollRad)*sin(pitchRad))*6;
+
 			//Motion based on yaw
-			x = x + speed*cos(yawRad);
-			z = z - speed*sin(yawRad);
-			//std::cout<<planeYaw<<"\n";
+			x += speed * cos(yawRad);
+			z -= speed * sin(yawRad);
+
 			//Motion based on pitch
-			y = y + neg*(speed*sin(pitchRad)-speed*abs(sin(rollRad)));
-        
-        
-			//std::cout<<y;
-        
+			y += neg * (speed * sin(pitchRad) - speed * abs(sin(rollRad)));
 		}
     
 		void drawPlane()
