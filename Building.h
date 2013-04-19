@@ -26,6 +26,7 @@ public:
         height = 10;
         
     }
+
     void drawBuilding(){
         glColor3f(.16, .16, .16);
         double width = 2*height/10;

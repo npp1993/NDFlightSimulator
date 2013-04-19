@@ -18,14 +18,7 @@
 class TerrainTile {
     
 	public:
-
-		float x;
-		float y;
-
 		float tileSize;
-
-		float xMax;
-		float yMax;
 
 		float red;
 		float green;
@@ -40,15 +33,9 @@ class TerrainTile {
 		double hasTree;
 		double hasBuilding;
 
-		TerrainTile(float i, float j, float size)
+		TerrainTile(float size)
 		{
-			x = i;
-			y = j;
-
 			tileSize = size;
-
-			xMax = x + tileSize;
-			yMax = y + tileSize;
 
 			z1 = 0;
 			z2 = 0;
@@ -58,20 +45,19 @@ class TerrainTile {
 			red = 0.1;
 			green = 0.15;
 			blue = 0.05;
-			alpha = 1;
+			alpha = 1.0;
 
 			hasTree = 0;
 			hasBuilding = 0;
 		}
 
-		void drawTile(float xOff, float yOff)
+		void drawTile(float x, float y)  //draw tiles relative to the x and y offset of the user's plane
 		{
-			//draw tiles relative to the x and y offset of the user's plane
 			glColor4f(red, green, blue, alpha);
-			glVertex3f(x + xOff, z1, y + yOff);
-			glVertex3f(x+xOff, z2, yMax+yOff);
-			glVertex3f(xMax+xOff, z3, yMax+yOff);
-			glVertex3f(xMax+xOff, z4, y+yOff);
+			glVertex3f(x, z1, y);
+			glVertex3f(x, z2, y + tileSize);
+			glVertex3f(x + tileSize, z3, y + tileSize);
+			glVertex3f(x + tileSize, z4, y);
 		}
 };
 #endif /* defined(__GraphicsExample__TerrainTile__) */

@@ -8,6 +8,7 @@
 
 #ifndef TerrainData_H
 #define TerrainData_H
+#define _USE_MATH_DEFINES
 
 #include <iostream>
 #include <math.h>
@@ -23,47 +24,32 @@
 class TerrainData {
 
 	private:
-		std::deque <std::vector <TerrainTile> > tiles;
-		float tileSize;
+		std::deque <std::deque <TerrainTile> > tiles;
+
+		float tileSize;  //default tile length and width
+		float xSize;  //x and y dimensions of terrain
+		float ySize;
+		float dx;  //x and y offsets that terrain are drawn at, used to make terrain look like it is moving under the plane
+		float dy;
+		float thetaX;
+		float thetaY;
     
 	public:
 
 		TerrainData()
 		{
-			tileSize = 1.0;  //default tile length and width
+			tileSize = 1.0;
+			xSize = 400;  //must be integer multiple of tileSize
+			ySize = 400;
+			dx = 0;
+			dy = 0;
 
-			for(double i = -300; i < 300; i+=tileSize)
-			{
-				std::vector<TerrainTile> tileRow;
+			thetaX = 0;  //used to generate terrain randomness
+			thetaY = 0;
 
-				for(double j = -300; j < 300; j+=tileSize)
-				{
-					TerrainTile newTile(i, j, tileSize);
+			initTerrain();  //initialize terrain data
 
-					newTile.z1 = 0;
-					newTile.z2 = 0;
-					newTile.z3 = 0;
-					newTile.z4 = 0;
-
-					newTile.red = rand()%10 * 0.1;
-
-					if( (rand() % 1000) > 992)
-					{
-						//newTile.hasTree = 1;
-					}
-
-					if( (rand() % 10000 ) > 5000)
-					{
-						//newTile.hasBuilding = 1;
-					}
-
-					tileRow.push_back(newTile);  //add new tile
-				}
-
-				tiles.push_back(tileRow);  //add new row of tiles to 2D data structure
-			}
-
-
+			//terrain smoothing, building and forest generation
 			//refine tiles
 			/*
 			for(int x = 1; x < 200; x++)
@@ -228,54 +214,33 @@ class TerrainData {
 		}
 
 		void drawTerrain(float xOff, float yOff)
-		{	
-			float minX=200000, maxX=0, minY=20000, maxY=0;
+		{
 			glBegin(GL_QUADS);
 
-			for (int i = 20; i <tiles.size() - 20; i++)
+			for (int i = 0; i < tiles.size(); i++)
 			{
-				for (int j = 20; j <tiles.size() - 20; j++)
+				for (int j = 0; j < tiles[i].size(); j++)
 				{
-					if(tiles[i][j].xMax > maxX)
-					{
-						maxX = tiles[i][j].xMax;
-					}
-
-					if(tiles[i][j].yMax > maxY)
-					{
-						maxY = tiles[i][j].yMax;
-					}
-
-					if(tiles[i][j].x < minX)
-					{
-						minX = tiles[i][j].x;
-					}
-
-					if(tiles[i][j].y < minY)
-					{
-						minY = tiles[i][j].y;
-					}
-
-					tiles[i][j].drawTile(xOff, yOff);
+					tiles[i][j].drawTile(tileSize * (((float)i)-tiles.size()/2) + xOff, tileSize * (((float)j)-tiles[i].size()/2) + yOff);
 				}
 			}
 
-			//drawWater(maxX, maxY, minX, minY);  ***fix this, causes tearing currently***
+			//drawWater(xSize/2, ySize/2, -xSize/2, -ySize/2);  ***fix this, causes tearing currently***
 
 			glEnd();
     
-			drawTrees();
-			drawBuildings();
+			//drawTrees();
+			//drawBuildings();
 
 		}
 
-		/*void drawWater(float maxX, float maxY, float minX, float minY)
+		void drawWater(float maxX, float maxY, float minX, float minY)
 		{
-			WaterTile water(0, 0, 2000);
-			water.drawTile(mainPlane.x, mainPlane.y);
-		}*/
+		//	WaterTile water(0, 0, 2000);
+		//	water.drawTile(mainPlane.x, mainPlane.y);
+		}
 
-		void drawTrees()
+		/*void drawTrees()
 		{
 			for (int i = 20; i <tiles.size()-20; i++)
 			{
@@ -295,8 +260,9 @@ class TerrainData {
 					}
 				}
 			}
-		}
+		}*/
 
+		/*
 		void drawBuildings()
 		{
 			for(int i = 20; i <tiles.size()-20; i++)
@@ -358,15 +324,142 @@ class TerrainData {
 				}
 			}
 		}
+		*/
+
+		void shiftTerrain(float xVel, float yVel)  //shifts the terrain under the user to represent flight over it
+		{
+			shiftTerrainX(xVel);
+			shiftTerrainY(yVel);
+		}
+
+		void initTerrain()
+		{
+			for(int i = -xSize/(2*tileSize); i < xSize/(2*tileSize); i++)
+			{
+				generateTerrainStripX(i);
+			}
+		}
+
+		void shiftTerrainX(float xVel)  //generate new terrain and discard old terrain as the user flys in the x direction
+		{
+			for(float i = 0; i < floor(xVel/tileSize); i++)
+			{
+				generateTerrainStripX(i);
+			}
+		}
+
+		void generateTerrainStripX(int i)
+		{
+			std::deque<TerrainTile> tileRow;
+
+			float x = sin(thetaX);
+			thetaX += 0.1;
+
+			for(int j = 0; j < ySize/tileSize; j++)
+			{
+				TerrainTile newTile(tileSize);  //translate map so that it is centered on (0, 0)
+
+				float y = sin(thetaY);
+				thetaY += 0.3;
+
+				newTile.z3 = x + y;
+					
+				if(i == -xSize/(2*tileSize))  //only used when called from initTerrain()
+				{
+					newTile.z1 = x;
+					newTile.z2 = x;
+				}
+				else
+				{
+					newTile.z1 = tiles.back()[j].z4;
+					newTile.z2 = tiles.back()[j].z3;
+				}
+
+				if(j == 0)
+				{
+						newTile.z4 += y;
+				}
+				else
+				{
+					newTile.z4 = tileRow.back().z3;
+				}
+
+				newTile.red = rand() % 10 * 0.05;
+
+				/*if( (rand() % 100) > 99)
+				{
+					//newTile.hasTree = 1;
+				}
+
+				if( (rand() % 100 ) > 5)
+				{
+					//newTile.hasBuilding = 1;
+				}*/
+
+				tileRow.push_back(newTile);  //add new tile
+			}
+
+			tiles.push_back(tileRow);  //add new row of tiles to 2D data structure
+
+			if(tiles.size() > xSize/tileSize)
+			{
+				tiles.pop_front();  //pop the terrain row out of the current map
+			}
+		}
+
+		void shiftTerrainY(float yVel)
+		{
+			for(float i = 0; i < floor(abs(yVel)/tileSize); i++)  //fix abs
+			{
+				float x = sin(thetaX);
+				thetaX += 0.01;
+
+				for(int j = 0; j < ySize/tileSize; j++)
+				{
+					TerrainTile newTile(tileSize);  //translate map so that it is centered on (0, 0)
+
+					float y = sin(thetaY);
+					thetaY += 0.03;
+
+					newTile.z1 = tiles[j].back().z2;
+					newTile.z4 = tiles[j].back().z3;
+					newTile.z3 = x + y;
+					
+					if(j == 0)
+					{
+						newTile.z2 = x;
+					}
+					else
+					{
+						newTile.z2 = tiles[j-1].back().z3;
+					}
+
+					newTile.blue = rand() % 10 * 0.05;
+
+					/*if( (rand() % 100) > 99)
+					{
+						//newTile.hasTree = 1;
+					}
+
+					if( (rand() % 100 ) > 5)
+					{
+						//newTile.hasBuilding = 1;
+					}*/
+
+					tiles[j].push_back(newTile);  //add new tile
+					tiles[j].pop_front();
+				}
+			}
+		}
 
 		int size()
 		{
-				return tiles.size();
+			return tiles.size();
 		}
 
-		std::vector<TerrainTile> operator[](int i)  //allows syntax such as terrain[x][y] in main.cpp
+		std::deque<TerrainTile> operator[](int i)  //allows syntax such as terrain[x][y] in main.cpp
 		{
-				return tiles[i];
+			return tiles[i];
 		}
 };
-#endif /* defined(__GraphicsExample__TerrainTile__) */
+#endif /* defined(__GraphicsExample__TerrainData__) */

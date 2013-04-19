@@ -162,7 +162,7 @@ void initScene()
 }
 
 
-void drawPlane()
+void drawPlanes()
 {    
     //Draw Enemy planes
     for (int i = 0; i < enemyPlanes.size(); i++)
@@ -221,9 +221,11 @@ void renderScene(void) {
 		bulletsArray[i].drawBullet();
 	}
 
-	terrain.drawTerrain(mainPlane.x, mainPlane.y);  //give offsets to terrain data so that it can be drawn relative to mainPlane's current position
+	drawPlanes();
 
-	drawPlane();
+	terrain.shiftTerrain(mainPlane.xVelocity, mainPlane.zVelocity);  //give velocities to terrain data so that it can be properly shifted
+	terrain.drawTerrain(mainPlane.x, mainPlane.z);  //give offsets to terrain data so that it can be drawn relative to mainPlane's current position
+
     //advanceLevel();  uncomment this when bringing enemy planes back in game
 
 

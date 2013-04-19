@@ -19,6 +19,8 @@ class Plane {
 		float x;
 		float y;
 		float z;
+		float xVelocity;
+		float zVelocity;
 		double roll;
 		double pitch;
 		double yaw;
@@ -32,11 +34,14 @@ class Plane {
 			x = 0;
 			y = 10;
 			z = 0;
+			xVelocity = 0;
+			zVelocity = 0;
+
 			roll = 0;
 			pitch = 0;
 			wingspan = 8;
-			speed = 0.2;
-			planeYaw = 0;
+			speed = 3.0;
+			planeYaw = -45;
 			planeRed = 0;
 		}
     
@@ -104,8 +109,10 @@ class Plane {
 			double yawRad = (planeYaw*pi)/180;
 
 			//Motion based on yaw
-			x += speed * cos(yawRad);
-			z -= speed * sin(yawRad);
+			xVelocity = speed * cos(yawRad);
+			zVelocity = speed * sin(yawRad);
+			x += xVelocity;
+			z -= zVelocity;
 
 			//Motion based on pitch
 			y += neg * (speed * sin(pitchRad) - speed * abs(sin(rollRad)));
