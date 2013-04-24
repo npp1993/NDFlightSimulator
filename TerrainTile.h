@@ -64,4 +64,5 @@ class TerrainTile {
 			glVertex3f(x + tileSize, z4, y);
 		}
 };
-#endif /* defined(__GraphicsExample__TerrainTile__) */
+
+#endif
