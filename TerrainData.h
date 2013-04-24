@@ -12,21 +12,21 @@
 
 #include <iostream>
 #include <math.h>
-#include <iostream>
 #include <vector>
 #include <deque>
 #include "GraphicsHeader.h"
 #include "TerrainTile.h"
 #include "WaterTile.h"
+#include "Point.h"
 #include "Tree.h"
 #include "Building.h"
-
+/*
 class TerrainData {
 
 	private:
 		std::deque <std::deque <TerrainTile> > tiles;
 
-		float tileSize;  //default tile length and width
+		int tileSize;  //default tile length and width
 		float xSize;  //x and y dimensions of terrain
 		float ySize;
 		float dx;  //x and y offsets that terrain are drawn at, used to make terrain look like it is moving under the plane
@@ -38,16 +38,25 @@ class TerrainData {
 
 		TerrainData()
 		{
-			tileSize = 1.0;
+			tileSize = 1;
 			xSize = 400;  //must be integer multiple of tileSize
 			ySize = 400;
 			dx = 0;
 			dy = 0;
 
+			initTerrain();
+
+			tiles[0][0].z1 = rand() % 10 - 5;  //initialize terrain structure
+			tiles[xSize-1][0] = rand() % 10 - 5;
+			tiles[xSize-1][ySize-1] = rand() % 10 - 5;
+			tiles[0][ySize-1] = rand() % 10 - 5;
+
+			generateTerrain(Point(0, 0), Point(xSize-1, 0), Point(xSize-1, ySize-1), Point(0, ySize-1));
+
 			thetaX = 0;  //used to generate terrain randomness
 			thetaY = 0;
 
-			initTerrain();  //initialize terrain data
+			//initTerrain();  //initialize terrain data
 
 			//terrain smoothing, building and forest generation
 			//refine tiles
@@ -210,7 +219,37 @@ class TerrainData {
 			}
 
 			myfile.close();
-			*/
+
+		}
+
+		void initTerrain()
+		{
+			for(int i = 0; i < xSize/tileSize; i++)
+			{
+				std::deque<TerrainTile> tempDeque;
+
+				for(int j = 0; j < ySize/tileSize; j++)
+				{
+					tempDeque.push_back(TerrainTile(tileSize));
+				}
+
+				tiles.push_back(tempDeque);
+			}
+			/*for(int i = -xSize/(2*tileSize); i < xSize/(2*tileSize); i++)
+			{
+				generateTerrainStripX(i);
+			}*/
+		}
+
+		void generateTerrain(Point p1, Point p2, Point p3, Point p4)
+		{
+			if(p1 == p3)  //base case
+			{
+				//determine color of tiles based on height
+				return;
+			}
+
+			generateTerrain(p1, p2, p3)
 		}
 
 		void drawTerrain(float xOff, float yOff)
@@ -328,20 +367,13 @@ class TerrainData {
 
 		void shiftTerrain(float xVel, float yVel)  //shifts the terrain under the user to represent flight over it
 		{
-			shiftTerrainX(xVel);
-			shiftTerrainY(yVel);
-		}
-
-		void initTerrain()
-		{
-			for(int i = -xSize/(2*tileSize); i < xSize/(2*tileSize); i++)
-			{
-				generateTerrainStripX(i);
-			}
+			//shiftTerrainX(xVel);
+			//shiftTerrainY(yVel);
 		}
 
 		void shiftTerrainX(float xVel)  //generate new terrain and discard old terrain as the user flys in the x direction
 		{
+
 			for(float i = 0; i < floor(xVel/tileSize); i++)
 			{
 				generateTerrainStripX(i);
@@ -359,7 +391,7 @@ class TerrainData {
 			{
 				TerrainTile newTile(tileSize);  //translate map so that it is centered on (0, 0)
 
-				float y = sin(thetaY);
+				/*float y = sin(thetaY);
 				thetaY += 0.3;
 
 				newTile.z3 = x + y;
@@ -386,7 +418,7 @@ class TerrainData {
 
 				newTile.red = rand() % 10 * 0.05;
 
-				/*if( (rand() % 100) > 99)
+				if( (rand() % 100) > 99)
 				{
 					//newTile.hasTree = 1;
 				}
@@ -395,6 +427,7 @@ class TerrainData {
 				{
 					//newTile.hasBuilding = 1;
 				}*/
+
 
 				tileRow.push_back(newTile);  //add new tile
 			}

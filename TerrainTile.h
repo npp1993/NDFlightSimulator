@@ -1,9 +1,8 @@
 //
 //  TerrainTile.h
-//  GraphicsExample
 //
-//  Created by Matt McGlynn on 3/26/13.
-//  Copyright (c) 2013 Matt McGlynn. All rights reserved.
+//  Created by Nathaniel Pawelczyk on 3/26/13.
+//  Copyright (c) 2013 Nathaniel Pawelczyk. All rights reserved.
 //
 
 #ifndef TerrainTile_H
@@ -18,7 +17,7 @@
 class TerrainTile {
     
 	public:
-		float tileSize;
+		static const int tileSize = 1.0;
 
 		float red;
 		float green;
@@ -33,22 +32,25 @@ class TerrainTile {
 		double hasTree;
 		double hasBuilding;
 
-		TerrainTile(float size)
+		TerrainTile()
 		{
-			tileSize = size;
-
 			z1 = 0;
 			z2 = 0;
 			z3 = 0;
 			z4 = 0;
 
-			red = 0.1;
-			green = 0.15;
-			blue = 0.05;
+			red = 0.1 + (rand()%10)/18.0;
+			green = 0.15 + (rand()%10)/18.0;
+			blue = 0.05 + (rand()%10)/18.0;
 			alpha = 1.0;
 
 			hasTree = 0;
 			hasBuilding = 0;
+		}
+
+		float averageHeight()
+		{
+			return (z1 + z2 + z3 + z4)/4.0f;
 		}
 
 		void drawTile(float x, float y)  //draw tiles relative to the x and y offset of the user's plane

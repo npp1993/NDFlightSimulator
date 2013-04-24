@@ -4,7 +4,7 @@
 #include <vector>
 #include <deque>
 #include <fstream>
-#include "TerrainData.h"
+#include "Terrain.h"
 #include "Plane.h"
 #include "Bullet.h"
 #include "EnemyPlane.h"
@@ -18,7 +18,7 @@ int indexer = 0;
 int shipRotationAngle = 0;
 
 Plane mainPlane;
-TerrainData terrain;
+Terrain terrain;
 std::vector <Bullet> bulletsArray;
 std::vector <EnemyPlane> enemyPlanes;
 
@@ -223,8 +223,7 @@ void renderScene(void) {
 
 	drawPlanes();
 
-	terrain.shiftTerrain(mainPlane.xVelocity, mainPlane.zVelocity);  //give velocities to terrain data so that it can be properly shifted
-	terrain.drawTerrain(mainPlane.x, mainPlane.z);  //give offsets to terrain data so that it can be drawn relative to mainPlane's current position
+	terrain.drawTerrain();
 
     //advanceLevel();  uncomment this when bringing enemy planes back in game
 

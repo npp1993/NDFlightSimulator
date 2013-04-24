@@ -31,7 +31,7 @@ class Plane {
 
 		Plane()
 		{
-			x = 0;
+			x = -300;
 			y = 10;
 			z = 0;
 			xVelocity = 0;
@@ -40,8 +40,8 @@ class Plane {
 			roll = 0;
 			pitch = 0;
 			wingspan = 8;
-			speed = 3.0;
-			planeYaw = -45;
+			speed = 0.6;
+			planeYaw = 0;
 			planeRed = 0;
 		}
     

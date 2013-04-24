@@ -19,7 +19,7 @@ class WaterTile : public TerrainTile
 {
 	public:
 
-		WaterTile(float size) : TerrainTile(size)
+		WaterTile() : TerrainTile()
 		{
 			red = 0;
 			green = 0;
