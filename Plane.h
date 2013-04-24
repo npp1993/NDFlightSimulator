@@ -12,71 +12,95 @@
 #include <math.h>
 #include "GraphicsHeader.h"
 #include "Bullet.h"
+#include <vector>
 
-class Plane {
-   
+class Plane { 
+    
 	public:
-		float x;
-		float y;
-		float z;
-		float xVelocity;
-		float zVelocity;
+		double x;
+		double y;
+		double z;
 		double roll;
 		double pitch;
 		double yaw;
 		double wingspan;
 		double speed;
 		double planeYaw;
-		bool planeRed;
-
+		bool planeRed = 0;
+		bool planeBlue = 0;
+		int dead = 0;
+		//std::vector<Bullet> userBullets;
+		
 		Plane()
 		{
-			x = -300;
-			y = 10;
+			x = -100;
+			y = 5;
 			z = 0;
-			xVelocity = 0;
-			zVelocity = 0;
-
 			roll = 0;
 			pitch = 0;
 			wingspan = 8;
-			speed = 0.6;
+			speed = .8;
 			planeYaw = 0;
 			planeRed = 0;
 		}
     
-		void movePlane()
-		{
-			if(pitch > 60)
-			{
+		void movePlane(){
+			if (pitch>60) {
 				pitch=60;
 			}
-
-			if(roll > 130)
-			{
+			if (roll>130){
 				roll = 130;
 			}
-
-			if(pitch < -60)
-			{
+			if (pitch<-60) {
 				pitch= -60;
 			}
-
-			if(roll < -130)
-			{
+			if (roll<-130){
 				roll = -130;
 			}
-
-			if(abs(roll) < 10)
-			{
-				roll /= 1.002;
+			if (abs(roll)<10){
+				roll/=1.002;
 			}
-
-			if (abs(pitch) < 10)
-			{
-				pitch /= 1.002;
+			if (abs(pitch)<10){
+				pitch/=1.002;
 			}
 			double pi = 3.14159262;
+			
+			//yaw is the cross product of roll and pitch
+			int neg =  -2*((roll>90) || (roll<-90))+1;
+			double rollRad = (roll*pi)/180;
+			if (rollRad>pi/2) {
+				rollRad-=pi;
+			}
+			if (rollRad<-pi/2) {
+				rollRad-=pi;
+			}
+			
+			double pitchRad = (pitch*pi)/180;
+			//yaw += asin(sin(rollRad)*sin(pitchRad))*6;
+			double yawPitchCotribution = pitch;
+			if (yawPitchCotribution>90) {
+				yawPitchCotribution-=90;
+			}
+			else if (yawPitchCotribution>50) {
+				yawPitchCotribution = 50;
+			}
+			double planeYawDelta = (roll/30*yawPitchCotribution/30)/2;
+			if (planeYawDelta>2) {
+				planeYawDelta = 2;
+			}
+			if (planeYawDelta<-2) {
+				planeYawDelta = -2;
+			}
+			planeYaw-=planeYawDelta;
+			double yawRad = (planeYaw*pi)/180;
+			//yawRad = asin(sin(rollRad)*sin(pitchRad))*6;
+			//Motion based on yaw
+			x = x + speed*cos(yawRad);
+			z = z - speed*sin(yawRad);
+			//std::cout<<planeYaw<<"\n";
+			//Motion based on pitch
+			y = y + neg*(speed*sin(pitchRad)-speed*abs(sin(rollRad)));
+        
         
 			//yaw is the cross product of roll and pitch
 			int neg = -2 * ( (roll > 90) || (roll < -90)) + 1;
@@ -122,12 +146,16 @@ class Plane {
 		{
 			glTranslatef(x, y, z);
 			glColor3f(.16, .16, .16);
-
+			
 			if (planeRed)
 			{
 				glColor3f(.3, .1, .1);
 			}
-        
+			else if (planeBlue)
+			{
+				glColor3f(.1, .1, .3);
+			}
+
 			glPushMatrix();
 			glRotatef(planeYaw, 0, 1, 0);
 			glRotatef(roll, 1, 0, 0);
@@ -200,6 +228,12 @@ class Plane {
 			shot.moveBullet();
 			return shot;
 		} 
+		
+		void userFire()
+		{
+			Bullet newBullet = fireBullet();
+			//userBullets.push_back(newBullet);
+		}
 };
 
 #endif

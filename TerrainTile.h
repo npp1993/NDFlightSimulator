@@ -15,7 +15,7 @@
 #include <vector>
 
 class TerrainTile {
-    
+
 	public:
 		static const int tileSize = 1.0;
 
@@ -29,8 +29,9 @@ class TerrainTile {
 		float z3;
 		float z4;
 
-		double hasTree;
-		double hasBuilding;
+		int hasTree;
+		int hasBuilding;
+        int hasSilo;
 
 		TerrainTile()
 		{
@@ -46,6 +47,7 @@ class TerrainTile {
 
 			hasTree = 0;
 			hasBuilding = 0;
+			hasSilo = 0;
 		}
 
 		float averageHeight()

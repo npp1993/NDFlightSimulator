@@ -23,9 +23,10 @@ public:
     double speed;
     double yaw;
     double pitch;
+    double hasHit = 0;
     
     
-    Bullet(){};
+    Bullet(){radius = 0.4;};
     Bullet(double xPos, double yPos, double zPos, double speedD, double yawA, double pitchA){
         x = xPos;
         y = yPos;
@@ -33,6 +34,7 @@ public:
         speed = speedD;
         yaw = yawA;
         pitch = pitchA;
+        radius = .4;
         
     }
     void moveBullet(){
@@ -44,10 +46,16 @@ public:
         y = y + speed*sin(pitchRad);
     }
     void drawBullet(){
+        
         glTranslatef(x, y, z);
         glColor4f(.16, .15, .15, .6);
         glPushMatrix();
-        glutSolidSphere(.4, 20, 20);
+        glutSolidSphere(radius, 20, 20);
+        
+        
+        
+        
+        
         glPopMatrix();
         glTranslatef(-x, -y, -z);
     }
