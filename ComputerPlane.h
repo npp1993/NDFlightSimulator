@@ -23,9 +23,11 @@ class ComputerPlane : public Plane {
     double defaultSpeed = 6*.12 + .12;
     int fireNumber = rand()%30;
     
+    
     std::vector<Explosion> myExplosions;
     std::vector<Bullet> bullets;
 public:
+    double manuverability = 1;
      Plane* enemyPlane;
     ComputerPlane(){
         x = -50;
@@ -81,9 +83,10 @@ public:
         if (desiredAngleRad < 0) {
             desiredAngleRad+=2*pi;
         }
-        double maxDelta = .6;
+        double maxDelta = .6*manuverability;
         double desiredRoll = 0;
         double planeYawDesired = (desiredAngleRad*180)/pi;
+
         if (((planeYawDesired-planeYaw)<180)&&((planeYawDesired-planeYaw)>0)) {
             if (abs(planeYawDesired-planeYaw)>1) {
                 planeYaw+=maxDelta;
@@ -101,7 +104,7 @@ public:
             }
         }
         //Handle shifting to desired roll
-        double rollDelta = 1.3;
+        double rollDelta = 1.3*manuverability;
         if (desiredRoll>roll) {
             if(abs(desiredRoll-roll)>2){
                 roll+=rollDelta;
@@ -126,7 +129,7 @@ public:
             planeYaw = 0;
         }
         
-        double pitchDelta = 1.2;
+        double pitchDelta = 1.2*manuverability;
         double pitchRad = asin((enemy.y - y)/distance);
         double desiredPitch = 0;
         if (!(pitchRad>-1||pitchRad<1)) {
@@ -158,7 +161,7 @@ public:
             }
         }
         if (y < 25) {
-            y = 25;
+            //y = 25;
         }
         //pitch = (pitchRad*180)/pi;
         if ((abs(planeYawDesired-planeYaw)<2)&& (abs(desiredPitch-pitch)<2)) {
@@ -184,13 +187,15 @@ public:
             if ((abs(bullets[i].x-enemyPlane->x)<6)&&(abs(bullets[i].z-enemyPlane->z)<6)&&(abs(bullets[i].y-enemyPlane->y)<3)&&!bullets[i].hasHit) {
                 bullets[i].radius = .8;
                 enemyPlane->dead = 1;
-                enemyPlane->speed= 0;
+                enemyPlane->pitch = -30;
+                enemyPlane->roll = 0;
+                //enemyPlane->speed= 0;
                 bullets[i].speed = 0;
                 bullets[i].hasHit = 1;
                 double hitX,hitY,hitZ;
-                hitX = bullets[i].x;
-                hitY = bullets[i].y;
-                hitZ = bullets[i].z;
+                hitX = enemyPlane->x;
+                hitY = enemyPlane->y;
+                hitZ = enemyPlane->z;
                 myExplosions.push_back(Explosion(x, y, z));
                 
             }else{
@@ -202,7 +207,7 @@ public:
     }
     void drawExplosions(){
         for (int i = 0; i<myExplosions.size(); i++) {
-            myExplosions[i].drawExplosion();
+            //myExplosions[i].drawExplosion();
         }
     }
     /*

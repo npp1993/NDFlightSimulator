@@ -37,7 +37,7 @@ public:
     float alpha;
     double hasTree;
     double hasBuilding;
-
+    double hasSilo;
     TerrainTile(){
         alpha = 1;
         x = 0;
@@ -52,6 +52,7 @@ public:
         z4 = 0;
 		hasTree = 0;
 		hasBuilding = 0;
+        hasSilo = 0;
     }
     void drawTile(){
         glColor4f(red,green,blue,alpha);

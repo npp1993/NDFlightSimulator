@@ -1,6 +1,7 @@
 #include "GraphicsHeader.h"
 #include <math.h>
 //#include <random>
+#include "Carrier.h"
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -10,16 +11,20 @@
 #include "Plane.h"
 #include "Bullet.h"
 #include "ComputerPlane.h"
+#include "HumanPlane.h"
+#include "Silo.h"
 float angle=0.0,deltaAngle = 0.0,ratio,rotationAngleDelta = 0,rotationAngle = 0;
 float x=-10.0f,y=21.75f,z=5.0f;
 float lx=0.0f,ly=0.0f,lz=-1.0f;
 int deltaMove = 0;
 int indexer = 0;
 int shipRotationAngle = 0;
-Plane mainPlane;
+HumanPlane mainPlane;
 std::vector <Bullet> bulletsArray;
 std::vector <ComputerPlane> enemyPlanes;
 std::vector <ComputerPlane> friendlyPlanes;
+std::vector <Carrier> carriers;
+std::vector<Silo> silos;
 
 
 
@@ -110,8 +115,33 @@ void drawTrees(){
         }
     }
 }
+
+void buildSilos(){
+    for (int i = 20; i <tiles.size()-20; i++) {
+        for (int j = 20; j <tiles.size()-20; j++) {
+            if (tiles[i][j].hasSilo&&(tiles[i][j].z>2)) {
+                Silo t;
+                t.siloRadius = 1;
+                t.x = tiles[i][j].x;
+                t.z = tiles[i][j].y;
+                t.y = tiles[i][j].z1;
+                silos.push_back(t);
+            }
+            
+        }
+    }
+}
+
+void drawSilos(){
+    for (int i = 0; i<silos.size(); i++) {
+        silos[i].adjustAttitudeFacingPlane(mainPlane);
+        silos[i].drawSilo();
+        silos[i].drawBullets();
+    }
+}
+
 void advanceLevel(){
-    if ((currentTime-previousTime)>3000) {
+    if ((currentTime-previousTime)>5000) {
         previousTime = currentTime;
         ComputerPlane newFriend;
         newFriend.x = (rand()%400)-200;
@@ -120,9 +150,13 @@ void advanceLevel(){
         
 
         ComputerPlane newEnemy;
-        newEnemy.x = (rand()%400)-200;
-        newEnemy.y = (rand()%20)+45;
-        newEnemy.z = (rand()%400)-200;
+        //newEnemy.x = (rand()%400)-200;
+        //newEnemy.y = (rand()%20)+45;
+        //newEnemy.z = (rand()%400)-200;
+        int g = (rand()%carriers.size());
+        newEnemy.x = carriers[g].x;
+        newEnemy.z = carriers[g].z;
+        newEnemy.y = carriers[g].y+carriers[g].length/12;
         //newEnemy.enemyPlane = &mainPlane;
         //newEnemy.huntEnemyPlane();
         //enemyPlanes.push_back(newEnemy);
@@ -230,6 +264,20 @@ GLuint createDL() {
     
 	return(flightsimDL);
 }
+
+void buildCarrierGroup(){
+    for (int i = 0; i<4; i++) {
+        Carrier newCarrier;
+        newCarrier.x = (rand()%300)+400;
+        newCarrier.z = (rand()%200)+400;
+        carriers.push_back(newCarrier);
+    }
+}
+void drawCarrierGroup(){
+    for (int i = 0; i<carriers.size(); i++) {
+        carriers[i].drawCarrier();
+    }
+}
 void buildTerrain(){
     double tileSize = .8;
     for (double j = -200; j<200; j+=tileSize) {
@@ -247,6 +295,13 @@ void buildTerrain(){
             //newTile.z = .7*(rand()%600-300)+1.4;
             newTile.z = 1*(rand()%600-300)+2;
             //newTile.z = prevZ + .005*(rand()%600-300)-.008;
+            //Build an island
+            if (abs(i)>160||abs(j)>160) {
+                newTile.z = 1*(rand()%100-50)-3;
+            }
+            if ((pow(abs(i),2)+ pow(abs(j),2))<pow(100,2)) {
+                newTile.z = 1*(rand()%700-350)+20;
+            }
             prevZ = newTile.z;
             newTile.z1=newTile.z;
             newTile.z2=newTile.z;
@@ -255,6 +310,9 @@ void buildTerrain(){
             newTile.zMax = newTile.z;
             if ((rand()%1000)>992) {
                 newTile.hasTree = 1;
+            }
+            if ((rand()%10000)>9996) {
+                newTile.hasSilo = 1;
             }
             if ((rand()%10000)>5000) {
                 newTile.hasBuilding = 1;
@@ -265,14 +323,15 @@ void buildTerrain(){
     }
     for (int x = 1; x<200; x++) {
         std::cout<<x;
-        for (int i = 1; i <tiles.size()-5; i++) {
-            for (int j = 1; j <tiles.size()-5; j++) {
+        double randCoeff = 1;
+        for (int i = 2; i <tiles.size()-5; i++) {
+            for (int j = 2; j <tiles.size()-5; j++) {
                 float totalRed = 0;
                 totalRed += tiles[i][j-1].red;
                 totalRed += tiles[i+1][j].red;
                 totalRed += tiles[i][j+1].red;
                 totalRed += tiles[i-1][j].red;
-                float newRed = totalRed/4+.00012*((rand()%1000)-500);
+                float newRed = totalRed/4+.00012*((rand()%1000)-500)*randCoeff;
                 if (newRed>.15) newRed = .15;
                 if (newRed<0) newRed = 0;
                 tiles[i][j].red = newRed;
@@ -282,7 +341,7 @@ void buildTerrain(){
                 totalGreen += tiles[i+1][j].green;
                 totalGreen += tiles[i][j+1].green;
                 totalGreen += tiles[i-1][j].green;
-                float newGreen = totalGreen/4+.000002*((rand()%1000)-500);
+                float newGreen = totalGreen/4+.000002*((rand()%1000)-500)*randCoeff;
                 if (newGreen>.3) newGreen = .3;
                 if (newGreen<0) newGreen = 0;
                 tiles[i][j].green = newGreen;
@@ -293,7 +352,7 @@ void buildTerrain(){
                 totalBlue += tiles[i+1][j].blue;
                 totalBlue += tiles[i][j+1].blue;
                 totalBlue += tiles[i-1][j].blue;
-                float newBlue = totalBlue/4+.00006*((rand()%1000)-500);
+                float newBlue = totalBlue/4+.00006*((rand()%1000)-500)*randCoeff;
                 if (newBlue>.05) newBlue = .05;
                 if (newBlue<0) newBlue = 0;
                 tiles[i][j].blue = newBlue;
@@ -308,6 +367,8 @@ void buildTerrain(){
                 if (newTree>.8) newTree = .8;
                 if (newTree<0) newTree = 0;
                 //tiles[i][j].hasTree = newTree;
+                
+               
                 
                 float totalBuilding = 0;
                 totalBuilding += tiles[i][j-1].hasBuilding;
@@ -337,15 +398,51 @@ void buildTerrain(){
                 }
                 
                 
-                //if (tiles[i][j].z<.2) {
-                //    tiles[i][j].red = .9;
-                //    tiles[i][j].green = .7;
-                //    tiles[i][j].blue = .62;
-                //}
+                if (tiles[i][j].z<.4&&x>195) {
+                    tiles[i][j].red = (.9+tiles[i][j].red)/2;
+                    tiles[i][j].green = (.7+tiles[i][j].green)/2;
+                    tiles[i][j].blue = (.62+tiles[i][j].blue)/2;
+                }
+                if (tiles[i][j].z>20&&x==190) {
+                    tiles[i][j].red = (.1+tiles[i][j].red)/2;
+                    tiles[i][j].green = (.1+tiles[i][j].green)/2;
+                    tiles[i][j].blue = (.1+tiles[i][j].blue)/2;
+                    tiles[i][j].hasTree = ((rand()%100)>96);
+                }
+                if (x==192) {
+                    //Color the island
+                    randCoeff = 1;
+                    if (tiles[i][j].z>2) {
+                        //tiles[i][j].red = 8*abs(tiles[i][j].z/10)*tiles[i][j].red;
+                    }
+                    if (tiles[i][j].z>20) {
+                        //tiles[i][j].red = .1;
+                        //tiles[i][j].green = .1;
+                        //tiles[i][j].blue = .1;
+                    }
+                    double zDiff = 0;
+                    zDiff += abs(tiles[i][j-2].z - tiles[i][j].z);
+                    zDiff  += abs(tiles[i+2][j].z- tiles[i][j].z);
+                    zDiff  += abs(tiles[i][j+2].z- tiles[i][j].z);
+                    zDiff  += abs(tiles[i-2][j].z- tiles[i][j].z);
+                    zDiff/=4;
+                    //std::cout<<zDiff;
+                    if (tiles[i][j].z>15) {
+                        tiles[i][j].hasBuilding = (rand()%1000)>520;
+                    }else{
+                        tiles[i][j].hasBuilding = (rand()%1000)>700;
+                    }
+                    if (zDiff<.3&&zDiff>.002) {
+                        //tiles[i][j].hasBuilding = 0;
+                    }
+                    
+                }
             }
         }
         
+        
     }
+    
     std::cout<<tiles.size();
     std::cout<<tiles[0].size();
     
@@ -402,10 +499,16 @@ void drawPlane(){
     
     //Draw Enemy planes
     for (int i = 0; i<enemyPlanes.size(); i++) {
-        enemyPlanes[i].movePlane();
-        enemyPlanes[i].drawPlane();
+        if (enemyPlanes[i].y>0) {
+            enemyPlanes[i].movePlane();
+            enemyPlanes[i].drawPlane();
+        }
+        //enemyPlanes[i].movePlane();
+        //enemyPlanes[i].drawPlane();
         //enemyPlanes[i].adjustAttitudeFacingPlane(mainPlane);
-        enemyPlanes[i].huntEnemyPlane();
+        if (!enemyPlanes[i].dead) {
+            enemyPlanes[i].huntEnemyPlane();
+        }
         enemyPlanes[i].drawBullets();
         if (enemyPlanes[i].enemyPlane->dead) {
             enemyPlanes[i].enemyPlane = &friendlyPlanes[(rand()%(friendlyPlanes.size()-1))];
@@ -413,10 +516,14 @@ void drawPlane(){
     }
     //Draw Friendly Planes
     for (int i = 0; i<friendlyPlanes.size(); i++) {
-        friendlyPlanes[i].movePlane();
-        friendlyPlanes[i].drawPlane();
+        if (friendlyPlanes[i].y>0) {
+            friendlyPlanes[i].movePlane();
+            friendlyPlanes[i].drawPlane();
+        }
         //friendlyPlanes[i].adjustAttitudeFacingPlane(mainPlane);
-        friendlyPlanes[i].huntEnemyPlane();
+        if (!friendlyPlanes[i].dead) {
+            friendlyPlanes[i].huntEnemyPlane();
+        }
         friendlyPlanes[i].drawBullets();
         if (friendlyPlanes[i].enemyPlane->dead) {
             friendlyPlanes[i].enemyPlane = &enemyPlanes[(rand()%(enemyPlanes.size()-1))];
@@ -498,14 +605,15 @@ void renderScene(void) {
             
         }
     }
-    drawWater(maxX,maxY,minX,minY);
+    drawWater(maxX*40,maxY*40,minX*40,minY*40);
 	glEnd();
     
     drawTrees();
     drawBuildings();
     drawPlane();
     advanceLevel();
-    
+    //drawSilos();
+    drawCarrierGroup();
     
     
     calculateFPS();
@@ -576,10 +684,14 @@ void releaseKey(int key, int x, int y) {
 int main(int argc, char **argv) {
     buildTerrain();
     buildEnemyPlanes();
+    buildCarrierGroup();
+    buildSilos();
+    mainPlane.y = 45;
     glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100,100);
 	glutInitWindowSize(1480,920);
+    //glutInitWindowSize(600,400);
 	glutCreateWindow("Flight Simulator Basic");
     
 	initScene();
