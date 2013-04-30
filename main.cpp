@@ -403,7 +403,7 @@ void drawPlanes()
     mainPlane.drawPlane();
 }
 
-void advanceLevel(){
+/*void advanceLevel(){
 	if ((currentTime-previousTime)>5000) {
 
 		previousTime = currentTime;
@@ -441,7 +441,7 @@ void advanceLevel(){
         
 	}
     
-}
+}*/
 
 void renderScene(void) {
     
@@ -495,15 +495,15 @@ void renderScene(void) {
         }
     }
 	*/
-    drawWater(maxX*40,maxY*40,minX*40,minY*40);
+    //drawWater(maxX*40,maxY*40,minX*40,minY*40);
 	glEnd();
     
-    drawTrees();
-    drawBuildings();
-    drawPlane();
-    advanceLevel();
-    drawSilos();
-    drawCarrierGroup();
+    //drawTrees();
+    //drawBuildings();
+    //drawPlane();
+    //advanceLevel();
+    //drawSilos();
+    //drawCarrierGroup();
     
 	for (int i = 0; i < bulletsArray.size(); i++)
 	{

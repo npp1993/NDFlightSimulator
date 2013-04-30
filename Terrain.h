@@ -68,10 +68,10 @@ class Terrain
 
 			drawTerrain();  //draw tiles
 
-			buildTerrain();
-			buildEnemyPlanes();
-			buildCarrierGroup();
-			buildSilos();
+			//buildTerrain();
+			//buildEnemyPlanes();
+			//buildCarrierGroup();
+			//buildSilos();
 		}
 
 		void generateTerrain(Point p1, Point p2, Point p3, Point p4)  //p1 bottom left point, counterclockwise around to upper left point p4
@@ -173,7 +173,7 @@ class Terrain
 			glEnd();
 		}
 
-		void drawTrees(){
+		/*void drawTrees(){
 			for (int i = 20; i <tiles.size()-20; i++) {
 				for (int j = 20; j <tiles.size()-20; j++) {
 					//std::cout<<tiles[i][j].hasTree;
@@ -235,7 +235,7 @@ class Terrain
 			{
 				carriers[i].drawCarrier();
 			}
-		}
+		}*/
 };
 
 #endif
