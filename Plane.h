@@ -26,15 +26,15 @@ class Plane {
 		double wingspan;
 		double speed;
 		double planeYaw;
-		bool planeRed = 0;
-		bool planeBlue = 0;
-		int dead = 0;
+		bool planeRed;
+		bool planeBlue;
+		int dead;
 		//std::vector<Bullet> userBullets;
 		
 		Plane()
 		{
-			x = -100;
-			y = 5;
+			x = 0;
+			y = 0;
 			z = 0;
 			roll = 0;
 			pitch = 0;
@@ -42,6 +42,8 @@ class Plane {
 			speed = .8;
 			planeYaw = 0;
 			planeRed = 0;
+			planeBlue = 0;
+			dead = 0;
 		}
     
 		void movePlane(){
@@ -100,46 +102,6 @@ class Plane {
 			//std::cout<<planeYaw<<"\n";
 			//Motion based on pitch
 			y = y + neg*(speed*sin(pitchRad)-speed*abs(sin(rollRad)));
-        
-        
-			//yaw is the cross product of roll and pitch
-			int neg = -2 * ( (roll > 90) || (roll < -90)) + 1;
-			double rollRad = (roll * pi) / 180;
-
-			if (rollRad > pi/2)
-			{
-				rollRad-=pi;
-			}
-
-			if (rollRad < -pi/2)
-			{
-				rollRad-=pi;
-			}
-        
-			double pitchRad = (pitch*pi)/180;
-			//yaw += asin(sin(rollRad)*sin(pitchRad))*6;
-			double planeYawDelta = (roll/30*pitch/30)/2;
-
-			if (planeYawDelta>2)
-			{
-				planeYawDelta = 2;
-			}
-			if (planeYawDelta<-2)
-			{
-				planeYawDelta = -2;
-			}
-
-			planeYaw-=planeYawDelta;
-			double yawRad = (planeYaw*pi)/180;
-
-			//Motion based on yaw
-			xVelocity = speed * cos(yawRad);
-			zVelocity = speed * sin(yawRad);
-			x += xVelocity;
-			z -= zVelocity;
-
-			//Motion based on pitch
-			y += neg * (speed * sin(pitchRad) - speed * abs(sin(rollRad)));
 		}
     
 		void drawPlane()

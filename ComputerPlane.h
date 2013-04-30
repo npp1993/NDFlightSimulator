@@ -17,18 +17,19 @@
 
 class ComputerPlane : public Plane {
     
-    int fireCount = 0;
-    double targetDisplaceX = 0; //(rand()%10)-5;
-    double targetDisplaceZ = 0; //(rand()%10)-5;
-    double defaultSpeed = 6*.12 + .12;
-    int fireNumber = rand()%30;
-    
+    int fireCount;
+    double targetDisplaceX;
+    double targetDisplaceZ;
+    double defaultSpeed;
+    int fireNumber;
     
     std::vector<Explosion> myExplosions;
     std::vector<Bullet> bullets;
+
 public:
-    double manuverability = 1;
-     Plane* enemyPlane;
+    double manuverability;
+	Plane* enemyPlane;
+
     ComputerPlane(){
         x = -50;
         y = 7;
@@ -36,9 +37,14 @@ public:
         roll = 0;
         pitch = 0;
         wingspan = 4;
+		fireCount = 0;
         speed = defaultSpeed+((rand()%5)*.06);
         planeYaw = 0;
-
+		targetDisplaceX = 0;
+		targetDisplaceZ = 0;
+		defaultSpeed = 6*.12 + .12;
+		fireNumber = rand()%30;
+		manuverability = 1;
         
     }
     void huntEnemyPlane(){

@@ -10,14 +10,21 @@
 #include "Bullet.h"
 #include "ComputerPlane.h"
 #include "HumanPlane.h"
-#include "Silo.h"
 
 float angle=0.0,deltaAngle = 0.0,ratio,rotationAngleDelta = 0,rotationAngle = 0;
 float x=-10.0f,y=21.75f,z=5.0f;
 float lx=0.0f,ly=0.0f,lz=-1.0f;
+
 int deltaMove = 0;
 int indexer = 0;
 int shipRotationAngle = 0;
+int frameCount = 0;
+int totalFPS;
+int iterations;
+double fps = 0;
+int currentTime = 0;
+int previousTime = 0;
+
 HumanPlane mainPlane;
 Terrain terrain;
 
@@ -25,7 +32,6 @@ std::vector <Bullet> bulletsArray;
 std::vector <ComputerPlane> enemyPlanes;
 std::vector <ComputerPlane> friendlyPlanes;
 std::vector <Carrier> carriers;
-std::vector<Silo> silos;
 
 void calculateFPS()
 {
@@ -89,7 +95,7 @@ void rotateMe(float ang)
 			  0.0f,1.0f,0.0f);
 }
 
-void drawTrees(){
+/*void drawTrees(){
     for (int i = 20; i <tiles.size()-20; i++) {
         for (int j = 20; j <tiles.size()-20; j++) {
             //std::cout<<tiles[i][j].hasTree;
@@ -171,7 +177,7 @@ void advanceLevel(){
         
     }
     
-}
+}*/
 
 void changeSize(int w, int h)
 { 
@@ -229,6 +235,7 @@ void drawCarrierGroup(){
         carriers[i].drawCarrier();
     }
 }
+/*
 void buildTerrain(){
     double tileSize = .8;
     for (double j = -200; j<200; j+=tileSize) {
@@ -273,7 +280,6 @@ void buildTerrain(){
         tiles.push_back(tiledRow);
     }
     for (int x = 1; x<200; x++) {
-        std::cout<<x;
         double randCoeff = 1;
         for (int i = 2; i <tiles.size()-5; i++) {
             for (int j = 2; j <tiles.size()-5; j++) {
@@ -411,6 +417,8 @@ void buildTerrain(){
     }
     myfile.close();
 }
+
+/*
 void buildEnemyPlanes(){
     for (int i = -100; i<101; i+=151) {
         for (int j = -100; j<101; j+=151) {
@@ -439,6 +447,7 @@ void buildEnemyPlanes(){
         }
     }
 }
+*/
 
 void initScene()
 {
@@ -531,7 +540,7 @@ void renderScene(void) {
         bulletsArray[i].drawBullet();
     }
 	
-    float minX=200000,maxX=0,minY=20000,maxY=0;
+    /*float minX=200000,maxX=0,minY=20000,maxY=0;
     glBegin(GL_QUADS);
     for (int i = 20; i <tiles.size()-20; i++) {
         for (int j = 20; j <tiles.size()-20; j++) {
@@ -553,8 +562,9 @@ void renderScene(void) {
     drawBuildings();
     drawPlane();
     advanceLevel();
-    //drawSilos();
+    drawSilos();
     drawCarrierGroup();
+	*/
     
 	for (int i = 0; i < bulletsArray.size(); i++)
 	{
@@ -577,7 +587,7 @@ void renderScene(void) {
 
 
 
-void pressKey(int key, int x, int y)
+void pressKey(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
@@ -661,10 +671,10 @@ void releaseKey(int key, int x, int y) {
 
 
 int main(int argc, char **argv) {
-    buildTerrain();
-    buildEnemyPlanes();
-    buildCarrierGroup();
-    buildSilos();
+    //buildTerrain();
+    //buildEnemyPlanes();
+    //buildCarrierGroup();
+    //buildSilos();
     mainPlane.y = 45;
     glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
@@ -699,8 +709,8 @@ int main(int argc, char **argv) {
     glClearColor(0.0f, 0.0f, .3f, .5f);
     
 	glutIgnoreKeyRepeat(0.1);
-	glutSpecialFunc(pressKey);
-    //glutKeyboardFunc(pressKey);
+	//glutSpecialFunc(pressKey);
+    glutKeyboardFunc(pressKey);
 	glutSpecialUpFunc(releaseKey);
     
 	glutDisplayFunc(renderScene);

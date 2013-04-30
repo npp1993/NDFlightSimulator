@@ -23,15 +23,21 @@ public:
     double speed;
     double yaw;
     double pitch;
-    double hasHit = 0;
+    int hasHit;
     
     
-    Bullet(){radius = 0.4;};
+    Bullet()
+	{
+		radius = 0.4;
+		hasHit = 0;
+	}
+
     Bullet(double xPos, double yPos, double zPos, double speedD, double yawA, double pitchA){
         x = xPos;
         y = yPos;
         z = zPos;
         speed = speedD;
+		hasHit = 0;
         yaw = yawA;
         pitch = pitchA;
         radius = .4;

@@ -32,7 +32,7 @@ class Terrain
 
 		Terrain()
 		{
-			xSize = 257;
+			xSize = 257;  //this number must be 2^n plus 1
 			ySize = 257;
 
 			srand(time(NULL));
@@ -50,10 +50,10 @@ class Terrain
 			}
 
 			
-			heights[0][0] = rand() % 100 - 50;  //initialize terrain structure corner height
-			heights[0][ySize-1] = rand() % 100 - 50;
-			heights[xSize-1][0] = rand() % 100 - 50;
-			heights[xSize-1][ySize-1] = rand() % 100 - 50;
+			heights[0][0] = 0;  //initialize terrain structure corner height
+			heights[0][ySize-1] = 0;
+			heights[xSize-1][0] = 0;
+			heights[xSize-1][ySize-1] = 0;
 
 			Point p1(0, 0);  //initial points
 			Point p2(0, ySize-1);
@@ -76,7 +76,7 @@ class Terrain
 				return;
 			}
 
-			int randFactor = (rand() % 10 - 3)/5;
+			float randFactor = (rand() % 10 - 4)/5.0f;
 			randFactor*=rectSize;
 
 			float midLeft = (heights[p1.x][p1.y] + heights[p4.x][p4.y])/2;  //generate midpoint heights
@@ -119,6 +119,30 @@ class Terrain
 					newTile.z2 = heights[i][j+1];
 					newTile.z3 = heights[i+1][j+1];
 					newTile.z4 = heights[i+1][j];
+
+					float z = newTile.averageHeight();
+
+					if(z <= 0.0f)
+					{
+						newTile.red = 0;
+						newTile.green = 0;
+						newTile.blue = 0.1;
+						newTile.alpha = 0.4;
+					}
+					else if( (z >= 0.0f) && (z <= 3.0f) )
+					{
+						newTile.red = 0.93;
+						newTile.green = 0.79;
+						newTile.blue = 0.69;
+						newTile.alpha = 1.0;
+					}
+					else
+					{
+						newTile.red = 0.2 + ((float)(rand() % 100) - 50)/1000.0f;
+						newTile.green = 0.2 + ((float)(rand() % 100) - 50)/1000.0f;
+						newTile.blue = 0.2 + ((float)(rand() % 100) - 50)/1000.0f;
+						newTile.alpha = 1.0;
+					}
 
 					temp.push_back(newTile);
 				}
