@@ -21,7 +21,8 @@
 
 //std::vector<Silo> silos;
 
-class Terrain{
+class Terrain
+{
 
 	public:
 		int indexer;

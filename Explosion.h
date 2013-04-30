@@ -1,49 +1,58 @@
 //
 //  Explosion.h
-//  FinalProjectFund2
 //
-//  Created by Matt McGlynn on 4/10/13.
-//  Copyright (c) 2013 Matt McGlynn. All rights reserved.
+//  Created by Nathaniel Pawelczyk on 4/10/13.
+//  Copyright (c) 2013 Nathaniel Pawelczyk. All rights reserved.
 //
 
-#ifndef FinalProjectFund2_Explosion_h
-#define FinalProjectFund2_Explosion_h
+#ifndef EXPLOSION_H
+#define EXPLOSION_H
 #include "GraphicsHeader.h"
-#include <math.h>
+#include <vector>
+#include "Particle.h"
 
-class Explosion {
-    
-    
-public:
-    double x;
-    double y;
-    double z;
-    double radius;
-    
-    Explosion(double newX,double newY,double newZ){
-        x = newX;
-        y = newY;
-        z = newZ;
-        radius = 0;
-    }
-    void drawExplosion(){
-        radius+=.02;
-        if(radius>9) return;
-        glTranslatef(x, y, z);
-        
-        for(int i = 0; i<300; i++){
-            double xOffset = (((rand()%500)-250)/100)*radius/3;
-            double yOffset = (((rand()%500)-250)/100)*radius/3;
-            double zOffset = (((rand()%500)-250)/100)*radius/3;
-            double distance = sqrt(pow(xOffset, 2)+pow(xOffset, 2)+pow(xOffset, 2));
-            glTranslatef(xOffset, yOffset, zOffset);
-            glutSolidSphere(radius/2+((rand()%10)/10)*radius/2, 20, 20);
-            double red = distance/9;
-            double green = distance/9;
-            glColor4f(red,green, .1,.1);
-            glTranslatef(-xOffset, -yOffset, -zOffset);
-        }
-        glTranslatef(-x, -y, -z);
-    }   
+class Explosion
+{
+	public:
+		std::vector<Particle> particles;
+		int life;
+
+		Explosion(float x, float y, float z, float vx, float vy, float vz)  //initialize explosion
+		{
+			life = 100;
+
+			for(int i = 0; i < 100; i++)
+			{
+				Particle p(x, y, z, vx, vy, vz);
+				particles.push_back(p);
+			}
+		}
+
+		bool drawExplosion()  //returns false if explosion has disappeared after this iteration
+		{
+			for(int i = 0; i < particles.size(); i++)
+			{
+				if(particles[i].advanceState())
+				{
+					float x = particles[i].x;
+					float y = particles[i].y;
+					float z = particles[i].z;
+
+					glColor4f(particles[i].r,particles[i].g,particles[i].b, particles[i].life);
+
+					glBegin(GL_TRIANGLE_STRIP);
+					glVertex3f(x+0.5f, y+0.5f, z);
+					glVertex3f(x-0.5f, y+0.5f, z);
+					glVertex3f(x+0.5f, y-0.5f, z);
+					glVertex3f(x-0.5f, y-0.5f, z);
+					glEnd();
+				}
+			}
+			
+			life--;
+			
+			return life <= 0;
+		}
 };
+
 #endif

@@ -10,6 +10,7 @@
 #include "Terrain.h"
 #include "ComputerPlane.h"
 #include "HumanPlane.h"
+#include "Explosion.h"i
 
 float angle=0.0,deltaAngle = 0.0,ratio,rotationAngleDelta = 0,rotationAngle = 0;
 float x=-10.0f,y=21.75f,z=5.0f;
@@ -21,6 +22,7 @@ std::vector <Bullet> bulletsArray;
 std::vector <ComputerPlane> enemyPlanes;
 std::vector <ComputerPlane> friendlyPlanes;
 Terrain terrain;
+Explosion e(mainPlane.x+100, mainPlane.y+40, mainPlane.z-70, 0, 0, 0);
 
 double frameCount,currentTime,fps,previousTime,totalFPS=0, iterations=0;
 
@@ -244,9 +246,6 @@ void drawPlane()
     //Move and draw plane
     mainPlane.movePlane();
     mainPlane.drawPlane();
-    
-    
-    
 }
 
 void renderScene(void) {
@@ -286,8 +285,13 @@ void renderScene(void) {
     }
 
 	terrain.drawTerrain();
-
 	drawPlane();
+
+	if(e.life > 0.0f)
+	{
+		e.drawExplosion();
+	}
+
 	advanceLevel();
     
     calculateFPS();
