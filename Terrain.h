@@ -15,6 +15,8 @@
 #include "Terrain.h"
 #include "TerrainTile.h"
 #include "Point.h"
+#include "Carrier.h"
+#include "Tree.h"
 
 using namespace std;
 
@@ -26,7 +28,7 @@ class Terrain
 		static int const tileSize = 1; //if this is changed, make sure to change corresponding tileSize in Point and TerrainTile
 		std::vector < std::vector<float> > heights;
 		std::vector < std::vector<TerrainTile> > tiles;
-
+		std::vector <Carrier> carriers;
 
 	public:
 
@@ -65,6 +67,11 @@ class Terrain
 			createTiles();  //create tiles from heights
 
 			drawTerrain();  //draw tiles
+
+			buildTerrain();
+			buildEnemyPlanes();
+			buildCarrierGroup();
+			buildSilos();
 		}
 
 		void generateTerrain(Point p1, Point p2, Point p3, Point p4)  //p1 bottom left point, counterclockwise around to upper left point p4
@@ -164,6 +171,70 @@ class Terrain
 			}
 
 			glEnd();
+		}
+
+		void drawTrees(){
+			for (int i = 20; i <tiles.size()-20; i++) {
+				for (int j = 20; j <tiles.size()-20; j++) {
+					//std::cout<<tiles[i][j].hasTree;
+					if (tiles[i][j].hasTree&&(tiles[i][j].z>2)) {//,78 for clumping
+						//std::cout<<tiles[i][j].hasTree;
+						Tree t;
+						t.x = tiles[i][j].x;
+						t.y = tiles[i][j].y;
+						t.z = tiles[i][j].z1;
+						t.height = .5;
+						t.baseWidth =.4;
+						t.leavesWidth = .55;
+						t.drawTree();
+					}
+            
+				}
+			}
+		}
+
+		void buildSilos(){
+			for (int i = 20; i <tiles.size()-20; i++) {
+				for (int j = 20; j <tiles.size()-20; j++) {
+					if (tiles[i][j].hasSilo&&(tiles[i][j].z>2)) {
+						Silo t;
+						t.siloRadius = 1;
+						t.x = tiles[i][j].x;
+						t.z = tiles[i][j].y;
+						t.y = tiles[i][j].z1;
+						silos.push_back(t);
+					}
+            
+				}
+			}
+		}
+
+		void drawSilos()
+		{
+			for (int i = 0; i<silos.size(); i++) {
+				silos[i].adjustAttitudeFacingPlane(mainPlane);
+				silos[i].drawSilo();
+				silos[i].drawBullets();
+			}
+		}
+
+		void buildCarrierGroup()
+		{
+			for (int i = 0; i<4; i++)
+			{
+				Carrier newCarrier;
+				newCarrier.x = (rand()%300)+400;
+				newCarrier.z = (rand()%200)+400;
+				carriers.push_back(newCarrier);
+			}
+		}
+
+		void drawCarrierGroup()
+		{
+			for (int i = 0; i<carriers.size(); i++)
+			{
+				carriers[i].drawCarrier();
+			}
 		}
 };
 

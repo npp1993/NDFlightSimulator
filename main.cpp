@@ -1,6 +1,5 @@
 #include "GraphicsHeader.h"
 #include <math.h>
-#include "Carrier.h"
 #include <iostream>
 #include <vector>
 #include <deque>
@@ -31,7 +30,7 @@ Terrain terrain;
 std::vector <Bullet> bulletsArray;
 std::vector <ComputerPlane> enemyPlanes;
 std::vector <ComputerPlane> friendlyPlanes;
-std::vector <Carrier> carriers;
+
 
 void calculateFPS()
 {
@@ -95,90 +94,6 @@ void rotateMe(float ang)
 			  0.0f,1.0f,0.0f);
 }
 
-/*void drawTrees(){
-    for (int i = 20; i <tiles.size()-20; i++) {
-        for (int j = 20; j <tiles.size()-20; j++) {
-            //std::cout<<tiles[i][j].hasTree;
-            if (tiles[i][j].hasTree&&(tiles[i][j].z>2)) {//,78 for clumping
-                //std::cout<<tiles[i][j].hasTree;
-                Tree t;
-                t.x = tiles[i][j].x;
-                t.y = tiles[i][j].y;
-                t.z = tiles[i][j].z1;
-                t.height = .5;
-                t.baseWidth =.4;
-                t.leavesWidth = .55;
-                t.drawTree();
-            }
-            
-        }
-    }
-}
-
-void buildSilos(){
-    for (int i = 20; i <tiles.size()-20; i++) {
-        for (int j = 20; j <tiles.size()-20; j++) {
-            if (tiles[i][j].hasSilo&&(tiles[i][j].z>2)) {
-                Silo t;
-                t.siloRadius = 1;
-                t.x = tiles[i][j].x;
-                t.z = tiles[i][j].y;
-                t.y = tiles[i][j].z1;
-                silos.push_back(t);
-            }
-            
-        }
-    }
-}
-
-void drawSilos(){
-    for (int i = 0; i<silos.size(); i++) {
-        silos[i].adjustAttitudeFacingPlane(mainPlane);
-        silos[i].drawSilo();
-        silos[i].drawBullets();
-    }
-}
-
-void advanceLevel(){
-    if ((currentTime-previousTime)>5000) {
-
-        previousTime = currentTime;
-        ComputerPlane newFriend;
-        newFriend.x = (rand()%400)-200;
-        newFriend.y = (rand()%20)+45;
-        newFriend.z = (rand()%400)-200;
-        
-
-        ComputerPlane newEnemy;
-        //newEnemy.x = (rand()%400)-200;
-        //newEnemy.y = (rand()%20)+45;
-        //newEnemy.z = (rand()%400)-200;
-        int g = (rand()%carriers.size());
-        newEnemy.x = carriers[g].x;
-        newEnemy.z = carriers[g].z;
-        newEnemy.y = carriers[g].y+carriers[g].length/12;
-        //newEnemy.enemyPlane = &mainPlane;
-        //newEnemy.huntEnemyPlane();
-        //enemyPlanes.push_back(newEnemy);
-        newEnemy.planeRed = 1;
-        newFriend.planeBlue = 1;
-        //Determine friends enemy
-        if (friendlyPlanes.size()==0) {
-            return;
-        }
-        int i = rand()%(enemyPlanes.size()-1);
-        newFriend.enemyPlane = &enemyPlanes[i];
-        i = rand()%(friendlyPlanes.size()-1);
-        newEnemy.enemyPlane = &friendlyPlanes[i];
-        newFriend.huntEnemyPlane();
-        newEnemy.huntEnemyPlane();
-        enemyPlanes.push_back(newEnemy);
-        friendlyPlanes.push_back(newFriend);
-        
-    }
-    
-}*/
-
 void changeSize(int w, int h)
 { 
 	// Prevent a divide by zero, when window is too short
@@ -197,7 +112,7 @@ void changeSize(int w, int h)
     glViewport(0, 0, w, h);
     
 	// Set the clipping volume
-	gluPerspective(45,ratio,1,1000);
+	gluPerspective(45, ratio, 1, 1000);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	gluLookAt(x, y, z,
@@ -215,26 +130,12 @@ GLuint createDL() {
 	// start list
 	glNewList(flightsimDL, GL_COMPILE);
     
-    
 	// endList
 	glEndList();
     
 	return(flightsimDL);
 }
 
-void buildCarrierGroup(){
-    for (int i = 0; i<4; i++) {
-        Carrier newCarrier;
-        newCarrier.x = (rand()%300)+400;
-        newCarrier.z = (rand()%200)+400;
-        carriers.push_back(newCarrier);
-    }
-}
-void drawCarrierGroup(){
-    for (int i = 0; i<carriers.size(); i++) {
-        carriers[i].drawCarrier();
-    }
-}
 /*
 void buildTerrain(){
     double tileSize = .8;
@@ -417,8 +318,8 @@ void buildTerrain(){
     }
     myfile.close();
 }
+*/
 
-/*
 void buildEnemyPlanes(){
     for (int i = -100; i<101; i+=151) {
         for (int j = -100; j<101; j+=151) {
@@ -447,13 +348,11 @@ void buildEnemyPlanes(){
         }
     }
 }
-*/
 
 void initScene()
 {
 	glEnable(GL_DEPTH_TEST);
 }
-
 
 void drawPlanes()
 {    
@@ -502,6 +401,46 @@ void drawPlanes()
     //Move and draw plane
     mainPlane.movePlane();
     mainPlane.drawPlane();
+}
+
+void advanceLevel(){
+	if ((currentTime-previousTime)>5000) {
+
+		previousTime = currentTime;
+		ComputerPlane newFriend;
+		newFriend.x = (rand()%400)-200;
+		newFriend.y = (rand()%20)+45;
+		newFriend.z = (rand()%400)-200;
+        
+
+		ComputerPlane newEnemy;
+		//newEnemy.x = (rand()%400)-200;
+		//newEnemy.y = (rand()%20)+45;
+		//newEnemy.z = (rand()%400)-200;
+		int g = (rand()%carriers.size());
+		newEnemy.x = carriers[g].x;
+		newEnemy.z = carriers[g].z;
+		newEnemy.y = carriers[g].y+carriers[g].length/12;
+		//newEnemy.enemyPlane = &mainPlane;
+		//newEnemy.huntEnemyPlane();
+		//enemyPlanes.push_back(newEnemy);
+		newEnemy.planeRed = 1;
+		newFriend.planeBlue = 1;
+		//Determine friends enemy
+		if (friendlyPlanes.size()==0) {
+			return;
+		}
+		int i = rand()%(enemyPlanes.size()-1);
+		newFriend.enemyPlane = &enemyPlanes[i];
+		i = rand()%(friendlyPlanes.size()-1);
+		newEnemy.enemyPlane = &friendlyPlanes[i];
+		newFriend.huntEnemyPlane();
+		newEnemy.huntEnemyPlane();
+		enemyPlanes.push_back(newEnemy);
+		friendlyPlanes.push_back(newFriend);
+        
+	}
+    
 }
 
 void renderScene(void) {
@@ -555,6 +494,7 @@ void renderScene(void) {
             
         }
     }
+	*/
     drawWater(maxX*40,maxY*40,minX*40,minY*40);
 	glEnd();
     
@@ -564,7 +504,6 @@ void renderScene(void) {
     advanceLevel();
     drawSilos();
     drawCarrierGroup();
-	*/
     
 	for (int i = 0; i < bulletsArray.size(); i++)
 	{
@@ -577,7 +516,6 @@ void renderScene(void) {
 	terrain.drawTerrain();
 
     //advanceLevel();  uncomment this when bringing enemy planes back in game
-
 
     calculateFPS();
 	glutSwapBuffers();
@@ -671,10 +609,7 @@ void releaseKey(int key, int x, int y) {
 
 
 int main(int argc, char **argv) {
-    //buildTerrain();
-    //buildEnemyPlanes();
-    //buildCarrierGroup();
-    //buildSilos();
+
     mainPlane.y = 45;
     glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
