@@ -71,6 +71,14 @@ public:
                 mainPlane->desiredPitch = 0;
                 mainPlane->desiredRoll = 0;
             }
+        }else{
+            if (planeToCheck->hitCount==300) {
+                planeToCheck->hitCount = 0;
+            }else if(planeToCheck->hitCount<50){
+                planeToCheck->hitCount++;
+            }else{
+                planeToCheck->y = -5;
+            }
         }
         
     }

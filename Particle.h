@@ -29,14 +29,15 @@ public:
     float x;
     float y;
     float z;
-    
+    int splash;
     float life;
     
-    Particle(float xo, float yo, float zo, float vxo, float vyo, float vzo)
+    Particle(float xo, float yo, float zo, float vxo, float vyo, float vzo,int sp)
     {
         r = 0.8 + float(rand()%100-50.0f)/300.0f;  //randomize
-        g = 0.0;
+        g = 0.2;
         b = 0.0;
+    
         
         x = xo;  //initialize position
         y = yo;
@@ -50,7 +51,14 @@ public:
         gravity = 0.05;
         
         life = 1.0;
-        fade = 0.05 + float(rand()%10)/300.0f;
+        fade = 0.02 + float(rand()%10)/300.0f;
+        splash = sp;
+        if (splash) {
+            r = 1;
+            b = 1;
+            g = 1;
+            fade = 0.07+float(rand()%10)/300.0f;
+        }
     }
     
     bool advanceState()  //move particle and reduce life, return false if life <= 0
@@ -68,6 +76,7 @@ public:
 			
             life -= fade;  //fade particle out
             
+            if(!splash) g = ((1-life)/1)*.5+0.2;
             return 1;
         }
         else

@@ -19,9 +19,10 @@ private:
     float* camy;
     float* camz;
     
+    
 public:
     std::vector<Particle> particles;
-    
+    double* yawAngle;
     Explosion(float x, float y, float z, float vx, float vy, float vz, float* cx, float* cy, float* cz)  //initialize explosion
     {
         camx = cx;
@@ -30,7 +31,9 @@ public:
         
         for(int i = 0; i < 300; i++)
         {
-            Particle p(x, y, z, vx, vy, vz);
+            int splash = 0;
+            if(y<2) splash = 1;
+            Particle p(x, y, z, vx, vy, vz,splash);
             particles.push_back(p);
         }
     }
@@ -46,16 +49,26 @@ public:
                 float y = particles[i].y;
                 float z = particles[i].z;
                 
-                glColor4f(particles[i].r,particles[i].g, particles[i].b, particles[i].life);
+                glColor4f(particles[i].r,particles[i].g, particles[i].b, particles[i].life+.3);
                 
                 billboardSphericalBegin(*camx, *camy, *camz, x, y, z);
                 
+                glTranslatef(x, y, z);
+                glPushMatrix();
+                glRotatef(90-*yawAngle, 0, 1, 0);
                 glBegin(GL_TRIANGLE_STRIP);
-                glVertex3f(x+0.3f, y+0.3f, z);
-                glVertex3f(x-0.3f, y+0.3f, z);
-                glVertex3f(x+0.3f, y-0.3f, z);
-                glVertex3f(x-0.3f, y-0.3f, z);
+                //glVertex3f(x+0.3f, y+0.3f, z);
+                //glVertex3f(x-0.3f, y+0.3f, z);
+                //glVertex3f(x+0.3f, y-0.3f, z);
+                //glVertex3f(x-0.3f, y-0.3f, z);
+                glVertex3f(0.3f, 0.3f, 0);
+                glVertex3f(-0.3f, 0.3f, 0);
+                glVertex3f(0.3f, -0.3f, 0);
+                glVertex3f(-0.3f, -0.3f, 0);
                 glEnd();
+                glPopMatrix();
+                glTranslatef(-x, -y, -z);
+     
                 
                 glPopMatrix();
             }
@@ -77,6 +90,7 @@ private:
         float modelview[16],angleCosine;
         
         glPushMatrix();
+        //glRotatef(0, 0, 1, 0);
         
         // objToCamProj is the vector in world coordinates from the
         // local origin to the camera projected in the XZ plane
@@ -109,7 +123,7 @@ private:
         // |angleCosine| could be bigger than 1 due to lack of precision
         if ((angleCosine < 0.99990) && (angleCosine > -0.9999))
         {
-            glRotatef(acos(angleCosine)*180/3.14,upAux[0], upAux[1], upAux[2]);
+            //glRotatef(acos(angleCosine)*180/3.14,upAux[0], upAux[1], upAux[2]);
         }
         
         // so far it is just like the cylindrical billboard. The code for the
@@ -139,11 +153,11 @@ private:
         {
             if (objToCam[1] < 0)
             {
-                glRotatef(acos(angleCosine)*180/3.14,1,0,0);
+                //glRotatef(acos(angleCosine)*180/3.14,1,0,0);
             }
             else
             {
-                glRotatef(acos(angleCosine)*180/3.14,-1,0,0);
+                //glRotatef(acos(angleCosine)*180/3.14,-1,0,0);
             }
         }
     }

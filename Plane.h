@@ -29,7 +29,9 @@ public:
     double planeYaw;
     bool planeRed = 0;
     bool planeBlue = 0;
+    double planeGreen = 0;
     int dead = 0;
+    double hitCount = 300;
     //std::vector<Bullet> userBullets;
     Plane(){
         x = -100;
@@ -114,6 +116,8 @@ public:
             glColor3f(.3, .1, .1);
         }else if (planeBlue){
             glColor3f(.1, .1, .3);
+        }else if (planeGreen){
+            glColor3f(.1, .1+planeGreen, .1);
         }
         
         glPushMatrix();

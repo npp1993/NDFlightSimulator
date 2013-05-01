@@ -18,6 +18,7 @@
 float angle=0.0,deltaAngle = 0.0,ratio,rotationAngleDelta = 0,rotationAngle = 0;
 float x=-10.0f,y=21.75f,z=5.0f;
 float lx=0.0f,ly=0.0f,lz=-1.0f;
+float zero = 0;
 int deltaMove = 0;
 int indexer = 0;
 int shipRotationAngle = 0;
@@ -30,11 +31,12 @@ std::vector <ComputerPlane> friendlyPlanes;
 std::vector <Carrier> carriers;
 std::vector<Silo> silos;
 std::vector<Building> buildings;
-ExplosionManager explosives(&x,&y,&z);
+ExplosionManager explosives(&x,&y,&z,&mainPlane.yaw);
 
 
 std::vector <std::vector <TerrainTile> >  tiles;
 double frameCount,currentTime,fps,previousTime,totalFPS=0, iterations=0;
+double healthTime = 0;
 
 void calculateFPS()
 {
@@ -147,7 +149,7 @@ void drawSilos(){
 
 void advanceLevel(){
         if ((currentTime-previousTime)>2000) {
-        explosives.generateExplosion(mainPlane.x, mainPlane.y, mainPlane.z, 0, 0, 0);
+        //explosives.generateExplosion(0, 45, 0, 0, 0, 0);
         previousTime = currentTime;
         ComputerPlane newFriend;
         newFriend.x = (rand()%400)-200;
@@ -524,7 +526,6 @@ void initScene() {
 
 
 void drawPlane(){
-    
     //Draw Enemy planes
     for (int i = 0; i<enemyPlanes.size(); i++) {
         if (enemyPlanes[i].y>0) {
@@ -539,10 +540,11 @@ void drawPlane(){
         }
         enemyPlanes[i].drawBullets();
         if (enemyPlanes[i].enemyPlane->dead||enemyPlanes[i].enemyPlane==NULL) {
-            enemyPlanes[i].enemyPlane = &friendlyPlanes[(rand()%(friendlyPlanes.size()-1))];
             if((rand()%10)>7){
                 enemyPlanes[i].enemyPlane = &mainPlane;
+                //mainPlane.dead= 0;
             }
+            enemyPlanes[i].enemyPlane = &friendlyPlanes[(rand()%(friendlyPlanes.size()-1))];
         }
     }
     //Draw Friendly Planes
@@ -605,7 +607,8 @@ void drawWater(float maxX,float maxY,float minX,float minY){
 
 
 void renderScene(void) {
-
+    mainPlane.manageHealth();
+    
     //GLfloat lightpos[] = {-x,-z,-y};
     //glTranslatef(lightpos[0], lightpos[1], lightpos[2]);
     glColor3f(1, 1, 1);
@@ -629,7 +632,7 @@ void renderScene(void) {
     glPushMatrix();
     //glLoadIdentity();
     //glTranslatef(x, y, z);
-    glRotatef(rotationAngle+90, 0, 1, 0);
+    //glRotatef(rotationAngle+90, 0, 1, 0);
     explosives.drawExplosions();
     //glTranslatef(-x, -y, -z);
     glPopMatrix();
@@ -707,7 +710,11 @@ void pressKey(int key, int x, int y) {
         case 'p':
             mainPlane.speed+=.1;break;
         case 'o':
-            mainPlane.speed-=.1;break;
+            mainPlane.speed-=.1;
+            if (mainPlane.speed<.3) {
+                mainPlane.speed = .3;
+            }
+            break;
         case 'u':
             mainPlane.userFire();
             break;

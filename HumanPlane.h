@@ -20,7 +20,6 @@ public:
     int health;
     double desiredPitch;
     double desiredRoll;
-    double hitCount = 300;
     Plane *lockOnTarget;
     int humanLock;
     HumanPlane(){
@@ -46,6 +45,10 @@ public:
             dead = 0;
         }
         drawHealth();
+        if (health<0) {
+            health = 0;
+        }
+        //planeGreen = (health/100)*.9;
     }
     void drawHealth(){
         glTranslatef(x, y+20, z);
@@ -141,9 +144,9 @@ public:
                 Plane coord = *enemyPlane;
                 glTranslatef(coord.x, coord.y, coord.z);
                 glColor3f(1, 0, 0);
-                glRotatef(90, 0, 1, 0);
+                glRotatef(80+planeYaw, 0, 1, 0);
                 glutSolidTorus(2, 20, 20, 20);
-                glRotatef(-90, 0, 1, 0);
+                glRotatef(-(80+planeYaw), 0, 1, 0);
                 glTranslatef(-coord.x, -coord.y, -coord.z);
                 humanLock = 1;
                 return;
