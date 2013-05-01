@@ -122,6 +122,7 @@ void drawTrees(){
 
 void advanceLevel(){
     if ((currentTime-previousTime)>2000) {
+		explosives.generateExplosion(45, -100, 0, 0, 0, 0);
         previousTime = currentTime;
         ComputerPlane newFriend;
         newFriend.x = (rand()%400)-200;
