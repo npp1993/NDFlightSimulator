@@ -13,7 +13,7 @@
 #include <iostream>
 #include "Bullet.h" 
 #include "GraphicsHeader.h"
-#include "Explosion.h"
+#include "ExplosionManager.h"
 
 class ComputerPlane : public Plane {
     
@@ -25,9 +25,11 @@ class ComputerPlane : public Plane {
     
     
     
-    std::vector<Explosion> myExplosions;
+    
     std::vector<Bullet> bullets;
+    
 public:
+    ExplosionManager *explosives;
     double defaultSpeed = 6*.12 + .12;
     double manuverability = 1;
     double isLock = 0;
@@ -197,7 +199,6 @@ public:
     }
     
     void drawBullets(){
-        drawExplosions();
         for (int i = 0; i<bullets.size(); i++) {
             if (bullets.size()<1) {
                 break;
@@ -218,7 +219,7 @@ public:
                 hitX = enemyPlane->x;
                 hitY = enemyPlane->y;
                 hitZ = enemyPlane->z;
-                myExplosions.push_back(Explosion(x, y, z));
+                (*explosives).generateExplosion(hitX, hitY, hitZ, 0, 0, 0);
                 
             }else{
                 bullets[i].moveBullet();
@@ -227,11 +228,7 @@ public:
             
         }
     }
-    void drawExplosions(){
-        for (int i = 0; i<myExplosions.size(); i++) {
-            //myExplosions[i].drawExplosion();
-        }
-    }
+
     /*
     void drawUserBullets(std::vector <ComputerPlane> * enemies){
         for (int k = 0; k<(*enemies).size(); k++) {

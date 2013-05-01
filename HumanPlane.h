@@ -166,6 +166,7 @@ public:
                 enemyPlane->pitch= -30;
                 userMissiles[k].speed = 0;
                 userMissiles.erase(userMissiles.begin()+k);
+                (*explosives).generateExplosion(enemyPlane->x, enemyPlane->y, enemyPlane->z, 0, 0, 0);
             }else{
                 userMissiles[k].moveMissile();
             }

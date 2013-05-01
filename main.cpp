@@ -14,6 +14,7 @@
 #include "HumanPlane.h"
 #include "Silo.h"
 #include "Collision.h"
+#include "ExplosionManager.h"
 float angle=0.0,deltaAngle = 0.0,ratio,rotationAngleDelta = 0,rotationAngle = 0;
 float x=-10.0f,y=21.75f,z=5.0f;
 float lx=0.0f,ly=0.0f,lz=-1.0f;
@@ -29,7 +30,7 @@ std::vector <ComputerPlane> friendlyPlanes;
 std::vector <Carrier> carriers;
 std::vector<Silo> silos;
 std::vector<Building> buildings;
-
+ExplosionManager explosives(&x,&y,&z);
 
 
 std::vector <std::vector <TerrainTile> >  tiles;
@@ -152,6 +153,7 @@ void advanceLevel(){
         newFriend.y = (rand()%20)+75;
         newFriend.z = (rand()%400)-200;
         newFriend.manuverability=2.2;
+        newFriend.explosives = &explosives;
         
 
         ComputerPlane newEnemy;
@@ -165,6 +167,7 @@ void advanceLevel(){
         newEnemy.pitch = 0;
         newEnemy.planeYaw = 90;
         newEnemy.timer = 200;
+        newEnemy.explosives = &explosives;
         //newEnemy.enemyPlane = &mainPlane;
         //newEnemy.huntEnemyPlane();
         //enemyPlanes.push_back(newEnemy);
@@ -661,6 +664,10 @@ void renderScene(void) {
         cDetector.buildings = &buildings;
     }
     cDetector.detectCollisions();
+    //glLoadIdentity();
+    glEnd();
+    explosives.drawExplosions();
+    
 }
 
 
@@ -741,6 +748,8 @@ int main(int argc, char **argv) {
     buildCarrierGroup();
     buildSilos();
     mainPlane.y = 45;
+    mainPlane.explosives = &explosives;
+    explosives.generateExplosion(0, 45, -100, 0, 0, 0);
 
     glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
