@@ -34,7 +34,7 @@ class Particle
 
 		Particle(float xo, float yo, float zo, float vxo, float vyo, float vzo)
 		{
-			r = 0.8;  //randomize
+			r = 0.8 + float(rand()%100-50.0f)/300.0f;  //randomize
 			g = 0.0;
 			b = 0.0;
 
@@ -42,15 +42,15 @@ class Particle
 			y = yo;
 			z = zo;
 
-			vx = vxo + float((rand()%50)-25.0)/1.0f;  //initialize velocity
-			vy = vyo + float((rand()%50)-25.0)/1.0f;
-			vz = vzo + float((rand()%50)-25.0)/1.0f;
+			vx = vxo + float((rand()%50)-25.0)/15.0f;  //initialize velocity
+			vy = vyo + float((rand()%50)-25.0)/15.0f;
+			vz = vzo + float((rand()%50)-25.0)/15.0f;
 
-			drag = 0.5;
-			gravity = 5.0;
+			drag = 0.3;
+			gravity = 0.1;
 
 			life = 1.0;
-			fade = 0.1 + float(rand()%10)/100.0f;
+			fade = 0.05 + float(rand()%10)/300.0f;
 		}
 
 		bool advanceState()  //move particle and reduce life, return false if life <= 0
@@ -61,8 +61,8 @@ class Particle
 				y += vy;
 				z += vz;
 
-				vx = vx + vx * ((vx > 0) ? (-1*drag) : drag);  //apply drag in x and z directions
-				vz = vz + vz * ((vz > 0) ? (-1*drag) : drag);
+				vx += vx * ((vx > 0) ? (-1*drag) : drag);  //apply drag in x and z directions opposite to velocity
+				vz += + vz * ((vz > 0) ? (-1*drag) : drag);
 
 				vy -= gravity;  //apply gravity in y direction
 			

@@ -5,12 +5,13 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <ctime>
 #include "Plane.h"
 #include "Bullet.h"
 #include "Terrain.h"
 #include "ComputerPlane.h"
 #include "HumanPlane.h"
-#include "Explosion.h"i
+#include "ExplosionManager.h"
 
 float angle=0.0,deltaAngle = 0.0,ratio,rotationAngleDelta = 0,rotationAngle = 0;
 float x=-10.0f,y=21.75f,z=5.0f;
@@ -22,7 +23,7 @@ std::vector <Bullet> bulletsArray;
 std::vector <ComputerPlane> enemyPlanes;
 std::vector <ComputerPlane> friendlyPlanes;
 Terrain terrain;
-Explosion e(mainPlane.x+100, mainPlane.y+40, mainPlane.z-70, 0, 0, 0);
+ExplosionManager explosionManager(&x, &y, &z);
 
 double frameCount,currentTime,fps,previousTime,totalFPS=0, iterations=0;
 
@@ -287,10 +288,7 @@ void renderScene(void) {
 	terrain.drawTerrain();
 	drawPlane();
 
-	if(e.life > 0.0f)
-	{
-		e.drawExplosion();
-	}
+	explosionManager.drawExplosions();
 
 	advanceLevel();
     
@@ -353,7 +351,9 @@ void releaseKey(int key, int x, int y) {
 	}
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
+	srand(time(NULL));
     buildEnemyPlanes();
 
     mainPlane.y = 45;
@@ -361,12 +361,12 @@ int main(int argc, char **argv) {
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100,100);
 	glutInitWindowSize(1480,920);
-    //glutInitWindowSize(600,400);
 	glutCreateWindow("Flight Simulator Basic");
     
 	initScene();
     
     // Enable lighting
+	explosionManager.generateExplosion(0, 45, -100, 0, 0, 0);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHT1);
@@ -387,6 +387,8 @@ int main(int argc, char **argv) {
     glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable( GL_BLEND );
     glClearColor(0.0f, 0.0f, .3f, .5f);
     
 	glutIgnoreKeyRepeat(.1);
