@@ -146,7 +146,8 @@ void drawSilos(){
 }
 
 void advanceLevel(){
-    if ((currentTime-previousTime)>2000) {
+        if ((currentTime-previousTime)>2000) {
+        //explosives.generateExplosion(0, 45, -100, 0, 0, 0);
         previousTime = currentTime;
         ComputerPlane newFriend;
         newFriend.x = (rand()%400)-200;
@@ -604,7 +605,7 @@ void drawWater(float maxX,float maxY,float minX,float minY){
 
 
 void renderScene(void) {
-    
+
     //GLfloat lightpos[] = {-x,-z,-y};
     //glTranslatef(lightpos[0], lightpos[1], lightpos[2]);
     glColor3f(1, 1, 1);
@@ -625,7 +626,10 @@ void renderScene(void) {
     }
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // Draw ground
-    
+    glPushMatrix();
+    glLoadIdentity();
+    explosives.drawExplosions();
+    glPopMatrix();
 	
     float minX=200000,maxX=0,minY=20000,maxY=0;
     glBegin(GL_QUADS);
@@ -665,8 +669,7 @@ void renderScene(void) {
     }
     cDetector.detectCollisions();
     //glLoadIdentity();
-    glEnd();
-    explosives.drawExplosions();
+    
     
 }
 
@@ -744,12 +747,13 @@ int main(int argc, char **argv) {
     cDetector.friendlyPlanes = &friendlyPlanes;
     cDetector.enemyPlanes = &enemyPlanes;
     cDetector.mainPlane = &mainPlane;
+    cDetector.explosives = &explosives;
     //buildEnemyPlanes();
     buildCarrierGroup();
     buildSilos();
     mainPlane.y = 45;
     mainPlane.explosives = &explosives;
-    explosives.generateExplosion(0, 45, -100, 0, 0, 0);
+    //explosives.generateExplosion(0, 45, -100, 0, 0, 0);
 
     glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);

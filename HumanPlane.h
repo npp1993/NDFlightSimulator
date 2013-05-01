@@ -164,14 +164,15 @@ public:
                 enemyPlane->dead = 1;
                 //enemyPlane->speed= 0;
                 enemyPlane->pitch= -30;
+                (*explosives).generateExplosion(enemyPlane->x, enemyPlane->y, enemyPlane->z, 0, 0, 0);
                 userMissiles[k].speed = 0;
                 userMissiles.erase(userMissiles.begin()+k);
-                (*explosives).generateExplosion(enemyPlane->x, enemyPlane->y, enemyPlane->z, 0, 0, 0);
+                
             }else{
                 userMissiles[k].moveMissile();
             }
             userMissiles[k].drawMissile();
-            if(userMissiles[k].missileTimer>200) userMissiles.erase(userMissiles.begin()+k);
+            if(userMissiles[k].missileTimer>2000) userMissiles.erase(userMissiles.begin()+k);
             
         }
         

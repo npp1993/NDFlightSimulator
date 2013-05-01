@@ -20,6 +20,7 @@ public:
     std::vector <Carrier> *carriers;
     std::vector <Building> *buildings;
     HumanPlane *mainPlane;
+    ExplosionManager *explosives;
     Collision(){};
     void detectCollisions(){
         //Detect collisions of friendly planes including main plane
@@ -49,6 +50,7 @@ public:
 
     }
     void handleCollisionForPlane(Plane * planeToCheck){
+        if(planeToCheck->speed)(*explosives).generateExplosion(planeToCheck->x, planeToCheck->y, planeToCheck->z, 0, 0, 0);
         planeToCheck->dead = 1;
         planeToCheck->speed = 0;
         if (planeToCheck == mainPlane) {
@@ -88,7 +90,6 @@ public:
         double buildingMinY = (*buildings)[i].z;
         double buildingMaxY = (*buildings)[i].maxZ;
         if((planeX>buildingMinX&&planeX<buildingMaxX+1)&&(planeY>buildingMinY&&planeY<buildingMaxY)&&(planeZ>buildingMinZ&&planeZ<buildingMaxZ+1)) handleCollisionForPlane(planeToCheck);
-
     }
         
     }
