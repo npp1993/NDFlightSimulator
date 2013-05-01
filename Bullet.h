@@ -23,7 +23,7 @@ public:
     double speed;
     double yaw;
     double pitch;
-    double hasHit = 0;
+    double hasHit;
     
     
     Bullet(){radius = 0.4;};
@@ -35,7 +35,7 @@ public:
         yaw = yawA;
         pitch = pitchA;
         radius = .4;
-        
+		hasHit = 0;
     }
     void moveBullet(){
         double pi = 3.14159262;

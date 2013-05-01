@@ -27,9 +27,9 @@ public:
     double wingspan;
     double speed;
     double planeYaw;
-    bool planeRed = 0;
-    bool planeBlue = 0;
-    int dead = 0;
+    bool planeRed;
+    bool planeBlue;
+    int dead;
     //std::vector<Bullet> userBullets;
     Plane(){
         x = -100;
@@ -41,6 +41,8 @@ public:
         speed = .8;
         planeYaw = 0;
         planeRed = 0;
+		planeBlue = 0;
+		dead = 0;
     }
     
     void movePlane(){

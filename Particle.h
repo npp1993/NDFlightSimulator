@@ -7,6 +7,7 @@
 
 #ifndef PARTICLE_H
 #define PARTICLE_H
+#include <cmath>
 #include "GraphicsHeader.h"
 
 class Particle
@@ -61,8 +62,8 @@ public:
             y += vy;
             z += vz;
             
-            vx += fabs((long)vx) * ((vx > 0) ? (-1*drag) : drag);  //apply drag in x and z directions opposite to velocity
-            vz += fabs((long)vz) * ((vz > 0) ? (-1*drag) : drag);
+            vx += fabs(vx) * ((vx > 0) ? (-1*drag) : drag);  //apply drag in x and z directions opposite to velocity
+            vz += fabs(vz) * ((vz > 0) ? (-1*drag) : drag);
             
             vy -= gravity;  //apply gravity in y direction
 			

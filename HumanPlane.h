@@ -20,7 +20,7 @@ public:
     int health;
     double desiredPitch;
     double desiredRoll;
-    double hitCount = 300;
+    double hitCount;
     Plane *lockOnTarget;
     int humanLock;
     HumanPlane(){
@@ -38,7 +38,7 @@ public:
         desiredRoll = 0;
         manuverability = 2;
         humanLock = 0;
-        
+        hitCount = 300;
     }
     void manageHealth(){
         if (dead) {

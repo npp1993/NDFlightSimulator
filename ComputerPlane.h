@@ -17,11 +17,11 @@
 
 class ComputerPlane : public Plane {
     
-    int fireCount = 0;
-    double targetDisplaceX = 0; //(rand()%10)-5;
-    double targetDisplaceZ = 0; //(rand()%10)-5;
+    int fireCount;
+    double targetDisplaceX; //(rand()%10)-5;
+    double targetDisplaceZ; //(rand()%10)-5;
     
-    int fireNumber = rand()%30;
+    int fireNumber;
     
     
     
@@ -30,9 +30,9 @@ class ComputerPlane : public Plane {
     
 public:
     ExplosionManager *explosives;
-    double defaultSpeed = 6*.12 + .12;
-    double manuverability = 1;
-    double isLock = 0;
+    double defaultSpeed;
+    double manuverability;
+    double isLock;
      Plane* enemyPlane;
     double cruiseSpeed;
     int timer;
@@ -46,8 +46,13 @@ public:
         speed = defaultSpeed+((rand()%5)*.06);
         cruiseSpeed = speed;
         planeYaw = 0;
-
-        
+		fireCount = 0;
+		targetDisplaceX = 0; //(rand()%10)-5;
+		targetDisplaceZ = 0; //(rand()%10)-5;
+		fireNumber = rand()%30;
+		defaultSpeed = 6*.12 + .12;
+		manuverability = 1;
+		isLock = 0;
     }
     void huntEnemyPlane(){
         adjustAttitudeFacingPlane(*enemyPlane);

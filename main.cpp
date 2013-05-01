@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <cmath>
 #include "TerrainTile.h"
 #include "Tree.h"
 #include "Building.h"
@@ -12,7 +13,6 @@
 #include "Bullet.h"
 #include "ComputerPlane.h"
 #include "HumanPlane.h"
-#include "Silo.h"
 #include "Collision.h"
 #include "ExplosionManager.h"
 float angle=0.0,deltaAngle = 0.0,ratio,rotationAngleDelta = 0,rotationAngle = 0;
@@ -28,7 +28,6 @@ Collision cDetector;
 std::vector <ComputerPlane> enemyPlanes;
 std::vector <ComputerPlane> friendlyPlanes;
 std::vector <Carrier> carriers;
-std::vector<Silo> silos;
 std::vector<Building> buildings;
 ExplosionManager explosives(&x,&y,&z);
 
@@ -118,30 +117,6 @@ void drawTrees(){
             }
             
         }
-    }
-}
-
-void buildSilos(){
-    for (int i = 20; i <tiles.size()-20; i++) {
-        for (int j = 20; j <tiles.size()-20; j++) {
-            if (tiles[i][j].hasSilo&&(tiles[i][j].z>2)) {
-                Silo t;
-                t.siloRadius = 1;
-                t.x = tiles[i][j].x;
-                t.z = tiles[i][j].y;
-                t.y = tiles[i][j].z1;
-                silos.push_back(t);
-            }
-            
-        }
-    }
-}
-
-void drawSilos(){
-    for (int i = 0; i<silos.size(); i++) {
-        silos[i].adjustAttitudeFacingPlane(mainPlane);
-        silos[i].drawSilo();
-        silos[i].drawBullets();
     }
 }
 
@@ -326,7 +301,7 @@ void buildTerrain(){
             if (abs(i)>160||abs(j)>160) {
                 newTile.z = 1*(rand()%100-50)-3;
             }
-            if ((pow(abs(i),2)+ pow(abs(j),2))<pow(100,2)) {
+            if ((pow(abs(i),2)+ pow(abs(j),2))<pow((float)100,2)) {
                 newTile.z = 1*(rand()%700-350)+20;
             }
             prevZ = newTile.z;
@@ -349,7 +324,6 @@ void buildTerrain(){
         tiles.push_back(tiledRow);
     }
     for (int x = 1; x<200; x++) {
-        std::cout<<x;
         double randCoeff = 1;
         for (int i = 2; i <tiles.size()-5; i++) {
             for (int j = 2; j <tiles.size()-5; j++) {
@@ -469,23 +443,6 @@ void buildTerrain(){
         
         
     }
-    
-    std::cout<<tiles.size();
-    std::cout<<tiles[0].size();
-    
-    //Save Terrain to file
-    std::ofstream myfile;
-    myfile.open ("Level1");
-    for (int i = 20; i <tiles.size()-20; i++) {
-        for (int j = 20; j <tiles.size()-20; j++) {
-            
-            myfile << tiles[i][j].x << ","<< tiles[i][j].xMax << "," << tiles[i][j].y << "," << tiles[i][j].yMax << ","<< tiles[i][j].z;
-            myfile << tiles[i][j].red << "," << tiles[i][j].green << "," << tiles[i][j].blue << "," << tiles[i][j].hasBuilding << "," << tiles[i][j].hasTree << "\n";
-            
-            
-        }
-    }
-    myfile.close();
 }
 void buildEnemyPlanes(){
     for (int i = -100; i<101; i+=151) {
@@ -650,14 +607,12 @@ void renderScene(void) {
     advanceLevel();
     drawPlane();
     
-    
-    //drawSilos();
     drawCarrierGroup();
     
     
     calculateFPS();
 	glutSwapBuffers();
-    //std::cout<<"hello";
+
     indexer++;
     if (loadBuildings) {
         loadBuildings = 0;
@@ -672,7 +627,7 @@ void renderScene(void) {
 
 
 
-void pressKey(int key, int x, int y) {
+void pressKey(unsigned char key, int x, int y) {
 	switch (key) {
 		case GLUT_KEY_LEFT :
 			deltaAngle = -0.014f;break;
@@ -746,7 +701,6 @@ int main(int argc, char **argv) {
     cDetector.mainPlane = &mainPlane;
     //buildEnemyPlanes();
     buildCarrierGroup();
-    buildSilos();
     mainPlane.y = 45;
     mainPlane.explosives = &explosives;
     explosives.generateExplosion(0, 45, -100, 0, 0, 0);
@@ -786,8 +740,8 @@ int main(int argc, char **argv) {
     glClearColor(0.0f, 0.0f, .6f, .5f);
     
 	glutIgnoreKeyRepeat(.05);
-	glutSpecialFunc(pressKey);
-    //glutKeyboardFunc(pressKey);
+	//glutSpecialFunc(pressKey);
+    glutKeyboardFunc(pressKey);
 	glutSpecialUpFunc(releaseKey);
     
 	glutDisplayFunc(renderScene);

@@ -8,7 +8,7 @@
 
 #ifndef FinalProjectFund2_Missle_h
 #define FinalProjectFund2_Missle_h
-#import "ComputerPlane.h"
+#include "ComputerPlane.h"
 
 class Missile : public ComputerPlane {
     
