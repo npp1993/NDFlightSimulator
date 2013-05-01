@@ -21,7 +21,7 @@ public:
     double length;
     double radarDirection;
     double radarSpeed;
-    Carrier(){
+    Carrier(){  //construct carrier
         x = 0;
         y = 0;
         z = 0;
@@ -31,7 +31,7 @@ public:
         
     }
     
-void drawCarrier(){
+void drawCarrier(){  //draw carrier
     radarDirection+=radarSpeed;
     if(radarDirection>360) radarDirection-=360;
     glTranslatef(x, y, z);

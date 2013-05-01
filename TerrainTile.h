@@ -18,7 +18,7 @@
 
 
 
-class TerrainTile {
+class TerrainTile {  //basic element of terrain landscape
     
 public:
     float x;
@@ -38,7 +38,7 @@ public:
     double hasTree;
     double hasBuilding;
     double hasSilo;
-    TerrainTile(){
+    TerrainTile(){  //construct terrain tile
         alpha = 1;
         x = 0;
         xMax = 0;
@@ -54,7 +54,7 @@ public:
 		hasBuilding = 0;
         hasSilo = 0;
     }
-    void drawTile(){
+    void drawTile(){  //draw tile
         glColor4f(red,green,blue,alpha);
         glVertex3f(x, z1, y);
         glVertex3f(x, z2, yMax);

@@ -22,7 +22,7 @@ private:
     std::vector<Explosion> explosions;
     
 public:
-    ExplosionManager(float* cx, float* cy, float* cz,double* planeYawIn)
+    ExplosionManager(float* cx, float* cy, float* cz,double* planeYawIn)  //construct ExplosionManager
     {
         camx = cx;
         camy = cy;

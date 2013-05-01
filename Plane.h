@@ -33,7 +33,7 @@ public:
     int dead = 0;
     double hitCount = 300;
     //std::vector<Bullet> userBullets;
-    Plane(){
+    Plane(){  //construct plane
         x = -100;
         y = 5;
         z = 0;
@@ -45,7 +45,7 @@ public:
         planeRed = 0;
     }
     
-    void movePlane(){
+    void movePlane(){  //move plane based on velocity
         if (pitch>60) {
             pitch=60;
         }
@@ -109,7 +109,7 @@ public:
         
     }
     
-    void drawPlane(){
+    void drawPlane(){  //draw plane
         glTranslatef(x, y, z);
         glColor3f(.16, .16, .16);
         if (planeRed) {
@@ -181,7 +181,7 @@ public:
 
     }
     
-    Bullet fireBullet(){
+    Bullet fireBullet(){  //fire a bullet
         Bullet shot;
         shot.x = x;
         shot.y = y;

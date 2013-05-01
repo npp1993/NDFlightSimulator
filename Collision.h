@@ -10,7 +10,7 @@
 #define FinalProjectFund2_Collision_h
 
 
-class Collision {
+class Collision {  //class that manages collision detection
     
     
 public:
@@ -49,7 +49,7 @@ public:
         
 
     }
-    void handleCollisionForPlane(Plane * planeToCheck){
+    void handleCollisionForPlane(Plane * planeToCheck){  //handles collisions between planes and objects
         if(planeToCheck->speed)(*explosives).generateExplosion(planeToCheck->x, planeToCheck->y, planeToCheck->z, 0, 0, 0);
         planeToCheck->dead = 1;
         planeToCheck->speed = 0;
@@ -83,7 +83,7 @@ public:
         
     }
     
-    void detectBuildingCollisionsForPlane(Plane * planeToCheck){
+    void detectBuildingCollisionsForPlane(Plane * planeToCheck){  //checks if a plane has collided with an object
         if (buildingAtXandZ(planeToCheck->x, planeToCheck->z)&&((planeToCheck->y)<14+(elevationAtXandZ(planeToCheck->x, planeToCheck->z))&&(elevationAtXandZ(planeToCheck->x, planeToCheck->z)>10))) {
             //handleCollisionForPlane(planeToCheck);
         }
@@ -101,7 +101,7 @@ public:
     }
         
     }
-    int buildingAtXandZ(double x, double z){
+    int buildingAtXandZ(double x, double z){  //handles collisions with buildings
         double tileSize = 0.8;
         int j = (x-(-200))/tileSize;
         int k = (z-(-200))/tileSize;
@@ -121,7 +121,7 @@ public:
         
         
     }
-    double elevationAtXandZ(double x, double z){
+    double elevationAtXandZ(double x, double z){  //helper function for collision detection with buildings
         double tileSize = 0.8;
         int j = (x-(-200))/tileSize;
         int k = (z-(-200))/tileSize;

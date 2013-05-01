@@ -38,7 +38,7 @@ std::vector <std::vector <TerrainTile> >  tiles;
 double frameCount,currentTime,fps,previousTime,totalFPS=0, iterations=0;
 double healthTime = 0;
 
-void calculateFPS()
+void calculateFPS()  //calculate the number of frames per second
 {
     //  Increase frame count
     frameCount++;
@@ -73,7 +73,7 @@ void calculateFPS()
 
 
 
-void orientMe(float ang) {
+void orientMe(float ang) {  //orient the camera
     
 	lx = sin(ang);
 	lz = -cos(ang);
@@ -83,7 +83,7 @@ void orientMe(float ang) {
 			  0.0f,1.0f,0.0f);
 }
 
-void moveMeFlat(int direction) {
+void moveMeFlat(int direction) {  //move the camera
 	x = x + direction*(lx)*0.1;
 	z = z + direction*(lz)*0.1;
 	glLoadIdentity();
@@ -91,7 +91,7 @@ void moveMeFlat(int direction) {
 		      x + lx,y + ly,z + lz,
 			  0.0f,1.0f,0.0f);
 }
-void rotateMe(float ang) {
+void rotateMe(float ang) {  //rotate the camera
     orientMe(ang);
 	ly = -sin(ang);
 	lx = -cos(ang);
@@ -103,7 +103,7 @@ void rotateMe(float ang) {
     
 }
 
-void drawTrees(){
+void drawTrees(){  //draw trees on the terrain
     for (int i = 20; i <tiles.size()-20; i++) {
         for (int j = 20; j <tiles.size()-20; j++) {
             //std::cout<<tiles[i][j].hasTree;
@@ -123,7 +123,7 @@ void drawTrees(){
     }
 }
 
-void buildSilos(){
+void buildSilos(){  //not in use
     for (int i = 20; i <tiles.size()-20; i++) {
         for (int j = 20; j <tiles.size()-20; j++) {
             if (tiles[i][j].hasSilo&&(tiles[i][j].z>2)) {
@@ -139,7 +139,7 @@ void buildSilos(){
     }
 }
 
-void drawSilos(){
+void drawSilos(){  //not in use
     for (int i = 0; i<silos.size(); i++) {
         silos[i].adjustAttitudeFacingPlane(mainPlane);
         silos[i].drawSilo();
@@ -147,7 +147,7 @@ void drawSilos(){
     }
 }
 
-void advanceLevel(){
+void advanceLevel(){  //create new enemy and friendly planes
         if ((currentTime-previousTime)>2000) {
         //explosives.generateExplosion(0, 45, 0, 0, 0, 0);
         previousTime = currentTime;
@@ -205,7 +205,7 @@ void advanceLevel(){
            }
     
 }
-void drawBuildings(){
+void drawBuildings(){  //draw building on terrain
     for (int i = 20; i <tiles.size()-20; i++) {
         for (int j = 20; j <tiles.size()-20; j++) {
             if (tiles[i][j].hasBuilding>.7&&tiles[i][j].z>4) {
@@ -253,7 +253,7 @@ void drawBuildings(){
         }
     }
 }
-void changeSize(int w, int h)
+void changeSize(int w, int h)  //resize the game window
 {
     
 	// Prevent a divide by zero, when window is too short
@@ -279,7 +279,7 @@ void changeSize(int w, int h)
 }
 
 
-GLuint createDL() {
+GLuint createDL() {  //OpenGL initalization function
 	GLuint flightsimDL;
     
 	// Create the id for the list
@@ -295,7 +295,7 @@ GLuint createDL() {
 	return(flightsimDL);
 }
 
-void buildCarrierGroup(){
+void buildCarrierGroup(){  //generate aircraft carriers
     for (int i = 0; i<4; i++) {
         Carrier newCarrier;
         newCarrier.x = (rand()%620)+300;
@@ -303,12 +303,12 @@ void buildCarrierGroup(){
         carriers.push_back(newCarrier);
     }
 }
-void drawCarrierGroup(){
+void drawCarrierGroup(){  //draw aircraft carriers
     for (int i = 0; i<carriers.size(); i++) {
         carriers[i].drawCarrier();
     }
 }
-void buildTerrain(){
+void buildTerrain(){  //generate terrain landscape
     double tileSize = .8;
     for (double j = -200; j<200; j+=tileSize) {
         std::vector<TerrainTile> tiledRow;
@@ -352,7 +352,7 @@ void buildTerrain(){
         tiles.push_back(tiledRow);
     }
     for (int x = 1; x<200; x++) {
-        std::cout<<x;
+        //std::cout<<x;
         double randCoeff = 1;
         for (int i = 2; i <tiles.size()-5; i++) {
             for (int j = 2; j <tiles.size()-5; j++) {
@@ -472,7 +472,7 @@ void buildTerrain(){
         
         
     }
-    
+    /*
     std::cout<<tiles.size();
     std::cout<<tiles[0].size();
     
@@ -489,8 +489,9 @@ void buildTerrain(){
         }
     }
     myfile.close();
+	*/
 }
-void buildEnemyPlanes(){
+void buildEnemyPlanes(){  //generate enemy planes
     for (int i = -100; i<101; i+=151) {
         for (int j = -100; j<101; j+=151) {
             ComputerPlane newEnemy;
@@ -525,7 +526,7 @@ void initScene() {
 }
 
 
-void drawPlane(){
+void drawPlane(){  //draw all planes
     //Draw Enemy planes
     for (int i = 0; i<enemyPlanes.size(); i++) {
         if (enemyPlanes[i].y>0) {
@@ -590,7 +591,7 @@ void drawPlane(){
     
 }
 
-void drawWater(float maxX,float maxY,float minX,float minY){
+void drawWater(float maxX,float maxY,float minX,float minY){  //draw water
     TerrainTile water;
     water.red = 0;
     water.green = 0;
@@ -606,7 +607,7 @@ void drawWater(float maxX,float maxY,float minX,float minY){
 }
 
 
-void renderScene(void) {
+void renderScene(void) {  //draw all objects
     mainPlane.manageHealth();
     
     //GLfloat lightpos[] = {-x,-z,-y};
@@ -681,7 +682,7 @@ void renderScene(void) {
 
 
 
-void pressKey(int key, int x, int y) {
+void pressKey(int key, int x, int y) {  //handles flight controls
 	switch (key) {
 		case GLUT_KEY_LEFT :
 			deltaAngle = -0.014f;break;
@@ -728,7 +729,7 @@ void pressKey(int key, int x, int y) {
 	}
 }
 
-void releaseKey(int key, int x, int y) {
+void releaseKey(int key, int x, int y) {  //handles key release events
     
 	switch (key) {
 		case GLUT_KEY_LEFT :
@@ -748,7 +749,7 @@ void releaseKey(int key, int x, int y) {
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv) {  //main function
     buildTerrain();
     //Make the mian plane the lead friendly plane 
     friendlyPlanes.push_back(mainPlane);

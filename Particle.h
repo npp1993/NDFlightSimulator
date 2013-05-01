@@ -32,7 +32,7 @@ public:
     int splash;
     float life;
     
-    Particle(float xo, float yo, float zo, float vxo, float vyo, float vzo,int sp)
+    Particle(float xo, float yo, float zo, float vxo, float vyo, float vzo,int sp)  //construct particle
     {
         r = 0.8 + float(rand()%100-50.0f)/300.0f;  //randomize
         g = 0.2;

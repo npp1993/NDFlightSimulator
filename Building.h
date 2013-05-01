@@ -22,14 +22,14 @@ public:
     double maxX;
     double maxY;
     double maxZ;
-    Building(){
+    Building(){  //construct building
         x = 0;
         y = 0;
         z = 0;
         height = 10;
         
     }
-    void drawBuilding(){
+    void drawBuilding(){  //draw building
         glColor3f(.16, .16, .16);
         double width = 2*height/10;
         maxX = x + width;

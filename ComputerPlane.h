@@ -15,7 +15,7 @@
 #include "GraphicsHeader.h"
 #include "ExplosionManager.h"
 
-class ComputerPlane : public Plane {
+class ComputerPlane : public Plane {  //derived from Plane
     
     int fireCount = 0;
     double targetDisplaceX = 0; //(rand()%10)-5;
@@ -36,7 +36,7 @@ public:
      Plane* enemyPlane;
     double cruiseSpeed;
     int timer;
-    ComputerPlane(){
+    ComputerPlane(){  //constructor for ComputerPlane
         x = -50;
         y = 7;
         z = 0;
@@ -49,11 +49,11 @@ public:
 
         
     }
-    void huntEnemyPlane(){
+    void huntEnemyPlane(){  //find enemy plane to hunt
         adjustAttitudeFacingPlane(*enemyPlane);
     }
     
-    void adjustAttitudeFacingPlane(Plane enemy){
+    void adjustAttitudeFacingPlane(Plane enemy){  //change direction that plane is facing
         if (timer) {
             //speed = ((300-timer)/300)*defaultSpeed;
             timer--;
@@ -198,7 +198,7 @@ public:
         fireCount++;
     }
     
-    void drawBullets(){
+    void drawBullets(){  //draw the plane's bullets
         for (int i = 0; i<bullets.size(); i++) {
             if (bullets.size()<1) {
                 break;

@@ -19,13 +19,13 @@ public:
     Missile() : ComputerPlane() {
         wingspan = .5;
     };
-    void moveMissile(){
+    void moveMissile(){  //move missile based on speed
         huntEnemyPlane();
         speed = missileSpeed*(missileTimer/100) + defaultSpeed*1.5;
         movePlane();
         missileTimer++;
     }
-    void drawMissile(){
+    void drawMissile(){  //draw missile
         glTranslatef(x, y, z);
         glColor3f(.16, .16, .16);
         

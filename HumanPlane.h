@@ -22,7 +22,7 @@ public:
     double desiredRoll;
     Plane *lockOnTarget;
     int humanLock;
-    HumanPlane(){
+    HumanPlane(){  //constructor for human plane
         x = -100;
         y = 5;
         z = 0;
@@ -39,7 +39,7 @@ public:
         humanLock = 0;
         
     }
-    void manageHealth(){
+    void manageHealth(){  //handle when human plane loses health
         if (dead) {
             health-=10;
             dead = 0;
@@ -50,7 +50,7 @@ public:
         }
         //planeGreen = (health/100)*.9;
     }
-    void drawHealth(){
+    void drawHealth(){  //not in use
         glTranslatef(x, y+20, z);
         glColor3f(1, 0, 0);
         glutSolidSphere(20, 20, 20);
@@ -59,7 +59,7 @@ public:
         glTranslatef(-x, -(y+20), -z);
     }
     
-    void fireMissile(std::vector <ComputerPlane> * enemies){
+    void fireMissile(std::vector <ComputerPlane> * enemies){  //fire a missile
         if(!humanLock) return;
         Missile newMissile;
         newMissile.y = y;
@@ -76,7 +76,7 @@ public:
         //newMissile.enemyPlane = &((*enemies)[rand()%((*enemies).size()-1)]);
         userMissiles.push_back(newMissile);
     }
-    void drawUserBullets(std::vector <ComputerPlane> * enemies){
+    void drawUserBullets(std::vector <ComputerPlane> * enemies){  //draw user's bullets
         for (int k = 0; k<(*enemies).size(); k++) {
             ComputerPlane *enemyPlane = &((*enemies)[k]);
             for (int i = 0; i<userBullets.size(); i++) {
@@ -106,7 +106,7 @@ public:
         drawMissiles();
     }
     
-    void lockOn(std::vector <ComputerPlane> * enemies){
+    void lockOn(std::vector <ComputerPlane> * enemies){  //draw lock-on toroid around enemy plane if in range
         humanLock = 0;
         isLock = 0;
         for (int i = 0; i<(*enemies).size(); i++) {
@@ -160,7 +160,7 @@ public:
         }
     }
     
-    void drawMissiles(){
+    void drawMissiles(){  //draw missiles
         for (int k = 0; k<userMissiles.size(); k++) {
             Plane *enemyPlane = userMissiles[k].enemyPlane;
             if ((abs(userMissiles[k].x-enemyPlane->x)<6)&&(abs(userMissiles[k].z-enemyPlane->z)<6)&&(abs(userMissiles[k].y-enemyPlane->y)<3)) {
@@ -182,7 +182,7 @@ public:
         
     }
 
-    void convertDesiredToActual(){
+    void convertDesiredToActual(){  //used in implementing 2nd derivative flight controls
         //Handle shifting to desired roll
         double rollDelta = 1.3*manuverability;
         if (desiredRoll>roll) {

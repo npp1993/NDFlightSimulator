@@ -21,7 +21,7 @@ public:
     float x;
     float y;
     float z;
-    Tree(){
+    Tree(){  //construct tree
         height = 2;
         baseWidth = 0.5;
         leavesWidth = 1;
@@ -29,7 +29,7 @@ public:
         y = 0;
         z = 0;
     }
-    void drawTree(){
+    void drawTree(){  //draw tree
         
         glTranslatef(x, z, y);
         glPushMatrix();

@@ -26,8 +26,8 @@ public:
     double hasHit = 0;
     
     
-    Bullet(){radius = 0.4;};
-    Bullet(double xPos, double yPos, double zPos, double speedD, double yawA, double pitchA){
+    Bullet(){radius = 0.4;};   //default constructor for bullet
+    Bullet(double xPos, double yPos, double zPos, double speedD, double yawA, double pitchA){  //construct bullet
         x = xPos;
         y = yPos;
         z = zPos;
@@ -37,7 +37,7 @@ public:
         radius = .4;
         
     }
-    void moveBullet(){
+    void moveBullet(){  //move bullet
         double pi = 3.14159262;
         double yawRad = (yaw * pi)/180;
         double pitchRad = (pitch *pi)/180;
@@ -45,7 +45,7 @@ public:
         z = z - speed*sin(yawRad);
         y = y + speed*sin(pitchRad);
     }
-    void drawBullet(){
+    void drawBullet(){  //draw bullet
         
         glTranslatef(x, y, z);
         glColor4f(.16, .15, .15, .6);
