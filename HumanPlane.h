@@ -172,7 +172,7 @@ public:
                 userMissiles[k].moveMissile();
             }
             userMissiles[k].drawMissile();
-            if(userMissiles[k].missileTimer>2000) userMissiles.erase(userMissiles.begin()+k);
+            if(userMissiles[k].missileTimer>200) userMissiles.erase(userMissiles.begin()+k);
             
         }
         
