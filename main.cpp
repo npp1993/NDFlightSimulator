@@ -147,7 +147,7 @@ void drawSilos(){
 
 void advanceLevel(){
         if ((currentTime-previousTime)>2000) {
-        //explosives.generateExplosion(0, 45, -100, 0, 0, 0);
+        explosives.generateExplosion(mainPlane.x, mainPlane.y, mainPlane.z, 0, 0, 0);
         previousTime = currentTime;
         ComputerPlane newFriend;
         newFriend.x = (rand()%400)-200;
@@ -627,8 +627,11 @@ void renderScene(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // Draw ground
     glPushMatrix();
-    glLoadIdentity();
+    //glLoadIdentity();
+    //glTranslatef(x, y, z);
+    glRotatef(rotationAngle+90, 0, 1, 0);
     explosives.drawExplosions();
+    //glTranslatef(-x, -y, -z);
     glPopMatrix();
 	
     float minX=200000,maxX=0,minY=20000,maxY=0;

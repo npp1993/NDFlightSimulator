@@ -219,7 +219,7 @@ public:
                 hitX = enemyPlane->x;
                 hitY = enemyPlane->y;
                 hitZ = enemyPlane->z;
-                (*explosives).generateExplosion(hitZ, hitY, hitX, 0, 0, 0);
+                (*explosives).generateExplosion(hitX, hitY, hitZ, 0, 0, 0);
                 
             }else{
                 bullets[i].moveBullet();
