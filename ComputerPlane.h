@@ -20,15 +20,20 @@ class ComputerPlane : public Plane {
     int fireCount = 0;
     double targetDisplaceX = 0; //(rand()%10)-5;
     double targetDisplaceZ = 0; //(rand()%10)-5;
-    double defaultSpeed = 6*.12 + .12;
+    
     int fireNumber = rand()%30;
+    
     
     
     std::vector<Explosion> myExplosions;
     std::vector<Bullet> bullets;
 public:
+    double defaultSpeed = 6*.12 + .12;
     double manuverability = 1;
+    double isLock = 0;
      Plane* enemyPlane;
+    double cruiseSpeed;
+    int timer;
     ComputerPlane(){
         x = -50;
         y = 7;
@@ -37,6 +42,7 @@ public:
         pitch = 0;
         wingspan = 4;
         speed = defaultSpeed+((rand()%5)*.06);
+        cruiseSpeed = speed;
         planeYaw = 0;
 
         
@@ -46,6 +52,11 @@ public:
     }
     
     void adjustAttitudeFacingPlane(Plane enemy){
+        if (timer) {
+            //speed = ((300-timer)/300)*defaultSpeed;
+            timer--;
+            return;
+        }
         double pi = 3.14159262;
         double deltaX = 0;
         double deltaZ = 0;
@@ -129,7 +140,7 @@ public:
             planeYaw = 0;
         }
         
-        double pitchDelta = 1.2*manuverability;
+        double pitchDelta = 1.4*manuverability;
         double pitchRad = asin((enemy.y - y)/distance);
         double desiredPitch = 0;
         if (!(pitchRad>-1||pitchRad<1)) {
@@ -143,6 +154,12 @@ public:
             }
         }else{
         desiredPitch = pitchRad*180/pi;
+            if (y < 50&&(x>-200&&x<200)&&(z>-200&&z<200)) {
+                desiredPitch = 0;
+            }
+            if (y < 45&&(x>-200&&x<200)&&(z>-200&&z<200)) {
+                desiredPitch = 5;
+            }
             if (desiredPitch>pitch) {
                 if(abs(desiredPitch-pitch)>2){
                 pitch+=pitchDelta;
@@ -160,15 +177,19 @@ public:
                 pitch = -30;
             }
         }
-        if (y < 25) {
-            //y = 25;
-        }
+        
         //pitch = (pitchRad*180)/pi;
-        if ((abs(planeYawDesired-planeYaw)<2)&& (abs(desiredPitch-pitch)<2)) {
+        if ((abs(planeYawDesired-planeYaw)<2)&& (abs(desiredPitch-pitch)<2)&&flatDistance<100) {
             if ((fireCount%20) == fireNumber) {
                 speed*=2;
                 bullets.push_back(fireBullet());
                 speed/=2;
+            }
+            
+        }
+        if ((abs(planeYawDesired-planeYaw)<20)&&abs(y-(*enemyPlane).y)<20) {
+            if(flatDistance<200){
+                isLock = 1;
             }
         }
         
@@ -190,8 +211,9 @@ public:
                 enemyPlane->pitch = -30;
                 enemyPlane->roll = 0;
                 //enemyPlane->speed= 0;
-                bullets[i].speed = 0;
-                bullets[i].hasHit = 1;
+                bullets.erase(bullets.begin()+i);
+                //bullets[i].speed = 0;
+                //bullets[i].hasHit = 1;
                 double hitX,hitY,hitZ;
                 hitX = enemyPlane->x;
                 hitY = enemyPlane->y;

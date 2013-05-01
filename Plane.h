@@ -98,7 +98,9 @@ public:
         z = z - speed*sin(yawRad);
         //std::cout<<planeYaw<<"\n";
         //Motion based on pitch
-        y = y + neg*(speed*sin(pitchRad)-speed*abs(sin(rollRad)));
+        double pitchDelta = neg*(speed*sin(pitchRad)-speed*abs(sin(rollRad)));
+        if(abs(roll-90)<19) pitchDelta = 0;
+        y = y + pitchDelta;
         
         
         //std::cout<<y;
@@ -187,10 +189,6 @@ public:
         return shot;
     }
     
-    void userFire(){
-        Bullet newBullet = fireBullet();
-        //userBullets.push_back(newBullet);
-    }
     
     
 };

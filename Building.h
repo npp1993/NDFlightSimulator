@@ -19,6 +19,9 @@ public:
     double y;
     double z;
     double height;
+    double maxX;
+    double maxY;
+    double maxZ;
     Building(){
         x = 0;
         y = 0;
@@ -29,9 +32,9 @@ public:
     void drawBuilding(){
         glColor3f(.16, .16, .16);
         double width = 2*height/10;
-        double maxX = x + width;
-        double maxY = y + width;
-        double maxZ = z + height;
+        maxX = x + width;
+        maxY = y + width;
+        maxZ = z + height;
         //glEnable(GL_CULL_FACE);
         //glCullFace(GL_BACK);
         //glFrontFace(GL_CW);
@@ -69,7 +72,7 @@ public:
         glVertex3d(x, maxZ, maxY);
         
         //Draw windows
-        glColor4f(0.0f, 0.0f, .1f, .5f);
+        glColor4f(0.0f, 0.0f, .1f, .8f);
         double windowWidth = width/8;
         double windowHeight = windowWidth*2;
         for (double xStep = x+windowWidth/2; xStep<maxX; xStep+=windowWidth*2) {
