@@ -90,6 +90,7 @@ void rotateMe(float ang) {
 
 void advanceLevel(){
     if ((currentTime-previousTime)>5000) {
+			explosionManager.generateExplosion(0, 45, -100, 0, 0, 0);
         previousTime = currentTime;
         ComputerPlane newFriend;
         newFriend.x = (rand()%400)-200;
@@ -328,8 +329,7 @@ void pressKey(unsigned char key, int x, int y) {
     
             Bullet newBullet = mainPlane.fireBullet();
             bulletsArray.push_back(newBullet);
-            break;
-        
+            break;        
 	}
 }
 
@@ -366,7 +366,6 @@ int main(int argc, char **argv)
 	initScene();
     
     // Enable lighting
-	explosionManager.generateExplosion(0, 45, -100, 0, 0, 0);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHT1);

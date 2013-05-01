@@ -7,6 +7,7 @@
 
 #ifndef PARTICLE_H
 #define PARTICLE_H
+#include <cmath>
 #include "GraphicsHeader.h"
 
 class Particle
@@ -42,12 +43,12 @@ class Particle
 			y = yo;
 			z = zo;
 
-			vx = vxo + float((rand()%50)-25.0)/15.0f;  //initialize velocity
-			vy = vyo + float((rand()%50)-25.0)/15.0f;
-			vz = vzo + float((rand()%50)-25.0)/15.0f;
+			vx = vxo + float((rand()%50)-25.0)/30.0f;  //initialize velocity
+			vy = vyo + float((rand()%50)-25.0)/30.0f;
+			vz = vzo + float((rand()%50)-25.0)/30.0f;
 
 			drag = 0.3;
-			gravity = 0.1;
+			gravity = 0.05;
 
 			life = 1.0;
 			fade = 0.05 + float(rand()%10)/300.0f;
@@ -61,8 +62,8 @@ class Particle
 				y += vy;
 				z += vz;
 
-				vx += vx * ((vx > 0) ? (-1*drag) : drag);  //apply drag in x and z directions opposite to velocity
-				vz += + vz * ((vz > 0) ? (-1*drag) : drag);
+				vx += fabs(vx) * ((vx > 0) ? (-1*drag) : drag);  //apply drag in x and z directions opposite to velocity
+				vz += fabs(vz) * ((vz > 0) ? (-1*drag) : drag);
 
 				vy -= gravity;  //apply gravity in y direction
 			

@@ -28,7 +28,7 @@ class Explosion
 			camy = cy;
 			camz = cz;
 
-			for(int i = 0; i < 100; i++)
+			for(int i = 0; i < 300; i++)
 			{
 				Particle p(x, y, z, vx, vy, vz);
 				particles.push_back(p);
@@ -41,7 +41,6 @@ class Explosion
 			{
 				if(particles[i].advanceState())
 				{
-					particles[i].advanceState();
 					float x = particles[i].x;
 					float y = particles[i].y;
 					float z = particles[i].z;
@@ -51,10 +50,10 @@ class Explosion
 					billboardSphericalBegin(*camx, *camy, *camz, x, y, z);
 
 					glBegin(GL_TRIANGLE_STRIP);
-					glVertex3f(x+0.5f, y+0.5f, z);
-					glVertex3f(x-0.5f, y+0.5f, z);
-					glVertex3f(x+0.5f, y-0.5f, z);
-					glVertex3f(x-0.5f, y-0.5f, z);
+					glVertex3f(x+0.3f, y+0.3f, z);
+					glVertex3f(x-0.3f, y+0.3f, z);
+					glVertex3f(x+0.3f, y-0.3f, z);
+					glVertex3f(x-0.3f, y-0.3f, z);
 					glEnd();
 
 					glPopMatrix();

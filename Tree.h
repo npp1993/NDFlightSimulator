@@ -36,10 +36,10 @@ public:
         glRotatef(-90, 1, 0, 0);
         GLUquadricObj *quadratic;
         quadratic = gluNewQuadric();
-        glColor4f(.2, .15, 0.05, .2);
+        glColor4f(.2, .15, 0.05, 1.0);
         glutSolidCone(baseWidth, height*2, 2, 4);
         glTranslatef(0, 0, 3*height/4);
-        glColor4f(0, .2, 0, 0);
+        glColor4f(0, .2, 0, 1.0);
         glutSolidCone(leavesWidth, height*2, 5, 5);
         glTranslatef(0, 0, -3*height/4);
         glPopMatrix();

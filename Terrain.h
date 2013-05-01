@@ -16,10 +16,6 @@
 #include "Building.h"
 #include "Explosion.h"
 #include "Carrier.h"
-//#include "Silo.h"
-
-
-//std::vector<Silo> silos;
 
 class Terrain
 {
@@ -79,7 +75,6 @@ class Terrain
     
 		drawTrees();
 		drawBuildings();
-		//drawSilos();
 		drawCarrierGroup();
 	}
 
